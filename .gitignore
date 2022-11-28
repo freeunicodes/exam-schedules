@@ -330,5 +330,5 @@ dist
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 
 # End of https://www.toptal.com/developers/gitignore/api/node,webstorm,intellij
-./data/credenials.json
+./data/credentials.json
 ./data/token.json
