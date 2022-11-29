@@ -1,5 +1,5 @@
 const {google} = require('googleapis');
-const {authorize} = require("./index.ts");
+const {authorize} = require("./index");
 const fs = require("fs");
 
 interface ExamInfo {
