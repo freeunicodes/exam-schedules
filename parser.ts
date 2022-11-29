@@ -11,7 +11,7 @@ interface ExamInfo {
     university: string
 }
 
-const getSheets = async (sheets: any, spreadsheetId: any) => {
+const getExamDates = async (sheets: any, spreadsheetId: any) => {
     let result = (await sheets.spreadsheets.get({
         spreadsheetId
     })).data.sheets;
@@ -29,36 +29,42 @@ function getSpreadsheetId(): string {
     return JSON.parse(fs.readFileSync("./data/SpreadsheetId.json").toString()).spreadsheetId;
 }
 
-async function listMajors(auth: any) {
-    const sheets = google.sheets({version: 'v4', auth});
-    let ranges: string[] = [];
-    await getSheets(sheets, getSpreadsheetId())
-        .then((row: any) => {
-            ranges = row;
-        });
-
-    ranges.map(async (range: string) => {
-        const res = await sheets.spreadsheets.values.get({
-            spreadsheetId: getSpreadsheetId(),
-            range: `${range}!A2:G`,
-        });
-        const rows = res.data.values;
-        if (!rows || rows.length === 0) {
-            console.log('No data found.');
-            return;
+async function getExamListForDate(range: string, sheets: any) {
+    const res = await sheets.spreadsheets.values.get({
+        spreadsheetId: getSpreadsheetId(),
+        range: `${range}!A2:G`,
+    });
+    const rows = res.data.values;
+    if (!rows || rows.length === 0) {
+        console.log(`No data found for ${range}.`);
+        return undefined;
+    }
+    return rows.map((row: any) => {
+        let examInfo: ExamInfo = {
+            date: range,
+            time: row[0],
+            subject: row[1],
+            lecturers: row[2],
+            groups: row[3],
+            university: row[4]
         }
-        rows.forEach((row: any) => {
-            let examInfo: ExamInfo = {
-                date: range,
-                time: row[0],
-                subject: row[1],
-                lecturers: row[2],
-                groups: row[3],
-                university: row[4]
-            }
-            console.log(examInfo);
-        });
+        return examInfo;
     });
 }
 
-authorize().then(listMajors).catch(console.error);
+async function getExamList(auth: any) {
+    const sheets = google.sheets({version: 'v4', auth});
+    const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
+
+    let result: ExamInfo[] = [];
+    for (const range of ranges) {
+        let examList = await getExamListForDate(range, sheets);
+        if (examList != undefined) {
+            result = [...result, ...examList];
+        }
+    }
+
+    console.log(result);
+}
+
+authorize().then(getExamList).catch(console.error);
