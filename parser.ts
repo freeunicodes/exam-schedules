@@ -53,18 +53,18 @@ async function getExamListForDate(range: string, sheets: any) {
 }
 
 async function getExamList(auth: any) {
-    const sheets = google.sheets({version: 'v4', auth});
+    const sheets = google.sheets({version: 'v4', auth})
     const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
 
-    let result: ExamInfo[] = [];
-    for (const range of ranges) {
-        let examList = await getExamListForDate(range, sheets);
-        if (examList != undefined) {
-            result = [...result, ...examList];
+    const promises = ranges.map(range => {
+        let promise = getExamListForDate(range, sheets)
+        if (promise != undefined) {
+            return promise
         }
-    }
+    })
 
-    console.log(result);
+    const result = (await Promise.all(promises)).flat()
+    console.log(result)
 }
 
 authorize().then(getExamList).catch(console.error);
