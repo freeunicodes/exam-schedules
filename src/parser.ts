@@ -57,6 +57,7 @@ async function getExamListForDate(range: string, sheets: any) {
             groups: groupsArray,
             university: row[4]
         }
+        console.log(examInfo)
         return examInfo;
     });
 }
@@ -66,13 +67,10 @@ async function getExamList(auth: any) {
     const sheets = google.sheets({version: 'v4', auth})
     const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
 
-    let result: ExamInfo[] = [];
-    for (const range of ranges) {
-        let examList = await getExamListForDate(range, sheets);
-        if (examList != undefined) {
-            result = [...result, ...examList];
-        }
-    }
+    const promises = ranges.map(range => {
+        return getExamListForDate(range, sheets)
+    })
+    let result = (await Promise.all(promises)).flat()
     result = result.filter((exam: any) => exam != undefined);
     return result;
 }
@@ -80,8 +78,10 @@ async function getExamList(auth: any) {
 authorize()
     .then((auth: any) => getExamList(auth)
         .then((examList: ExamInfo[]) => {
+
             let filteredExams = filters.filterExamsBySubject(examList, "წრედები")
             filteredExams = filters.filterExamsByUniversity(filteredExams, "Freeuni")
+            console.log("Filtered:  ")
             console.log(filteredExams)
         }))
     .catch(console.error);
