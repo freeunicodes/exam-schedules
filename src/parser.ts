@@ -28,11 +28,13 @@ function getSpreadsheetId(): string {
 
 // Returns array of examInfo for this date
 async function getExamListForDate(range: string, sheets: any) {
+    // This should be other function
     const res = await sheets.spreadsheets.values.get({
         spreadsheetId: getSpreadsheetId(),
         range: `${range}!A2:G`,
     });
     const rows = res.data.values;
+
     if (!rows || rows.length === 0) {
         console.log(`No data found for ${range}.`);
         return undefined;
@@ -61,7 +63,7 @@ async function getExamListForDate(range: string, sheets: any) {
 
 // Returns array of all exams
 async function getExamList(auth: any) {
-    const sheets = google.sheets({version: 'v4', auth});
+    const sheets = google.sheets({version: 'v4', auth})
     const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
 
     let result: ExamInfo[] = [];
