@@ -9,7 +9,7 @@ function containsLecturer(exam: ExamInfo, lecturer: string) {
 }
 
 //function returns filter array of examlist
-export function filterExamsByLecturer(examsList: ExamInfo[], lecturer: string) {
+function byLecturer(examsList: ExamInfo[], lecturer: string) {
     return examsList.filter((exam: ExamInfo) => containsLecturer(exam, lecturer));
 }
 
@@ -20,20 +20,26 @@ function containsGroup(exam: ExamInfo, group: string) {
 }
 
 //function returns filter array of examlist
-export function filterExamsByGroup(examsList: ExamInfo[], group: string) {
+function byGroup(examsList: ExamInfo[], group: string) {
     return examsList.filter((exam: ExamInfo) => containsGroup(exam, group));
 }
 
 //function returns filter array of examlist
-export function filterExamsBySubject(examsList: ExamInfo[], subject: string) {
+function bySubject(examsList: ExamInfo[], subject: string) {
     return examsList.filter((exam: ExamInfo) => exam.subject.includes(subject));
 }
 
 //function returns filter array of examlist
-export function filterExamsByUniversity(examsList: ExamInfo[], university: string) {
+function byUniversity(examsList: ExamInfo[], university: string) {
     return examsList.filter((exam: ExamInfo) => exam.university === university);
 }
 
+export default {
+    byGroup: byGroup,
+    byLecturer: byLecturer,
+    bySubject: bySubject,
+    byUniversity: byUniversity
+}
 
 
 

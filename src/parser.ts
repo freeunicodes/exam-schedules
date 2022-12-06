@@ -1,7 +1,6 @@
 const {google} = require('googleapis');
 const {authorize} = require("./google-auth");
 const fs = require("fs");
-import * as filters from "./filters"
 import {ExamInfo} from "./interfaces/ExamInfo";
 
 //return array of Spreadsheets' titles
@@ -36,11 +35,12 @@ async function getExamListForDate(range: string, sheets: any) {
     const rows = res.data.values;
 
     if (!rows || rows.length === 0) {
-        console.log(`No data found for ${range}.`);
+        //console.log(`No data found for ${range}.`);
         return undefined;
     }
     return rows.map((row: any) => {
-        if (row[0] == undefined || row[1] == undefined || row[2] == undefined || row[3] == undefined || row[4] == undefined) return undefined;
+        //console.log(row)
+        if (row.length < 5 || row.includes(undefined)) return undefined;
         let lecturersArray = row[2].split(",");
         lecturersArray = lecturersArray.map((lecturer: string) => {
             return lecturer.split(".").join(" ").split("  ").join(" ").trim();
@@ -57,13 +57,13 @@ async function getExamListForDate(range: string, sheets: any) {
             groups: groupsArray,
             university: row[4]
         }
-        console.log(examInfo)
+        //console.log(examInfo)
         return examInfo;
     });
 }
 
 // Returns array of all exams
-async function getExamList(auth: any) {
+export async function getExamList(auth: any) {
     const sheets = google.sheets({version: 'v4', auth})
     const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
 
@@ -74,14 +74,3 @@ async function getExamList(auth: any) {
     result = result.filter((exam: any) => exam != undefined);
     return result;
 }
-
-authorize()
-    .then((auth: any) => getExamList(auth)
-        .then((examList: ExamInfo[]) => {
-
-            let filteredExams = filters.filterExamsBySubject(examList, "წრედები")
-            filteredExams = filters.filterExamsByUniversity(filteredExams, "Freeuni")
-            console.log("Filtered:  ")
-            console.log(filteredExams)
-        }))
-    .catch(console.error);
