@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node lib/main.js",
-    "start-debuging": "ts-node src/main.ts"
+    "start-debugging": "ts-node src/main.ts"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
-    "googleapis": "^105.0.0"
+    "googleapis": "^105.0.0",
+    "watch": "^1.0.2"
   }
 }

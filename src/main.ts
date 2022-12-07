@@ -19,21 +19,21 @@ program.parse()
 function filterExams(university: string | undefined, lecturer: string | undefined,
                      subject: string | undefined, group: string | undefined) {
     authorize()
-        .then((auth: any) => getExamList(auth)
-            .then((filteredExams: ExamInfo[]) => {
-                if (university !== undefined) {
-                    filteredExams = filters.byUniversity(filteredExams, university)
-                }
-                if (subject !== undefined) {
-                    filteredExams = filters.bySubject(filteredExams, subject)
-                }
-                if (lecturer !== undefined) {
-                    filteredExams = filters.byLecturer(filteredExams, lecturer)
-                }
-                if (group !== undefined) {
-                    filteredExams = filters.byGroup(filteredExams, group)
-                }
-                console.log(filteredExams)
-            }))
+        .then((auth: any) => getExamList(auth))
+        .then((filteredExams: ExamInfo[]) => {
+            if (university !== undefined) {
+                filteredExams = filters.byUniversity(filteredExams, university)
+            }
+            if (subject !== undefined) {
+                filteredExams = filters.bySubject(filteredExams, subject)
+            }
+            if (lecturer !== undefined) {
+                filteredExams = filters.byLecturer(filteredExams, lecturer)
+            }
+            if (group !== undefined) {
+                filteredExams = filters.byGroup(filteredExams, group)
+            }
+            console.log(filteredExams)
+        })
         .catch(console.error);
 }
