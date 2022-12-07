@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "watch": "tsc -w",
     "build": "tsc",
     "start": "node lib/main.js",
     "start-debugging": "ts-node src/main.ts"
