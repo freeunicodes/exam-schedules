@@ -6,8 +6,8 @@
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",
-    "start": "node lib/main.js",
-    "start-debugging": "ts-node src/main.ts"
+    "start": "ts-node src/main.ts",
+    "test": "ts-mocha test/**/*.test.ts"
   },
   "author": "",
   "license": "ISC",
@@ -20,7 +20,11 @@
   },
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "chai": "^4.3.7",
     "googleapis": "^105.0.0",
+    "ts-mocha": "^10.0.0",
     "watch": "^1.0.2"
   }
 }
