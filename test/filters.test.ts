@@ -17,21 +17,19 @@ describe(`filtering exams`, () => {
         lecturers: ["ი. მღვდლიაშვილი"]
     }
 
-    describe(`byLecturer (ია მღვდლიაშვილი)`, () => {
-        it(`should find lecture by lecturer's full name`, () => {
+    describe(`byLecturer should find lecture by name`, () => {
+        it(`full name in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "ია მღვდლიაშვილი")).to.include(examInfo);
         })
-        it(`should find lecture by lecturer's signature`, () => {
+        it(`name initial in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "ი. მღვდლიაშვილი")).to.include(examInfo);
         })
-    })
-
-    describe(`byLecturer (ი. მღვდლიაშვილი)`, () => {
-        it(`should find lecture by lecturer's full name`, () => {
+        it(`full name in search query, name initial in schedule`, () => {
             expect(filters.byLecturer([examInfoSignature], "ია მღვდლიაშვილი")).to.include(examInfoSignature);
         })
-        it(`should find lecture by lecturer's signature`, () => {
+        it(`name initial in search query, name initial in schedule`, () => {
             expect(filters.byLecturer([examInfoSignature], "ი. მღვდლიაშვილი")).to.include(examInfoSignature);
         })
     })
+
 })
