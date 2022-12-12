@@ -1,39 +1,75 @@
 import {ExamInfo} from "./interfaces/ExamInfo";
 
-//function returns true if this lecturer is owner of this exam
-function containsLecturer(exam: ExamInfo, lecturer: string) {
-    let lecturerNameFirstLetter = lecturer[0];
-    let lecturerSign = lecturerNameFirstLetter + " " + lecturer.split(" ")[1];
-    let lecturerArray = exam.lecturers;
-    return lecturerArray.includes(lecturer) || lecturerArray.includes(lecturerSign);
+const {Searcher} = require("fast-fuzzy");
+
+const searchOptions = {
+    threshold: .7,
+    returnMatchData: true
 }
 
-//function returns filter array of examlist
-export function filterExamsByLecturer(examsList: ExamInfo[], lecturer: string) {
-    return examsList.filter((exam: ExamInfo) => containsLecturer(exam, lecturer));
+function mapAndFilterExamsList(mapFn: any, filterFn: any, examsList: any, searchString: string) {
+    let lecturersList = examsList.map(mapFn).flat();
+
+    lecturersList = [...new Set(lecturersList)]
+    const searcher = new Searcher(lecturersList);
+    let searchResults = searcher.search(searchString, searchOptions)
+
+    // Return match data can be true for debugging or other purposes
+    if (searchOptions.returnMatchData) {
+        searchResults = searchResults.map((obj: any) => obj.item);
+    }
+
+    return searchResults.map((searchResult: string) => {
+        return examsList.filter((x: any) => filterFn(x, searchResult));
+    }).flat();
 }
 
-//function returns true if this group is one of the groups of the exam
-function containsGroup(exam: ExamInfo, group: string) {
-    let groupsArray = exam.groups;
-    return groupsArray.includes(group);
+function byLecturer(examsList: ExamInfo[], lecturer: string) {
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.lecturers;
+        },
+        (x: any, searchResult: any) => {
+            return x.lecturers.includes(searchResult)
+        }, examsList, lecturer);
 }
 
-//function returns filter array of examlist
-export function filterExamsByGroup(examsList: ExamInfo[], group: string) {
-    return examsList.filter((exam: ExamInfo) => containsGroup(exam, group));
+function byGroup(examsList: ExamInfo[], group: string) {
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.groups;
+        },
+        (x: any, searchResult: any) => {
+            return x.groups.includes(searchResult)
+        }, examsList, group);
 }
 
-//function returns filter array of examlist
-export function filterExamsBySubject(examsList: ExamInfo[], subject: string) {
-    return examsList.filter((exam: ExamInfo) => exam.subject.includes(subject));
+function bySubject(examsList: ExamInfo[], subject: string) {
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.subject;
+        },
+        (x: any, searchResult: any) => {
+            return x.subject === searchResult
+        }, examsList, subject);
 }
 
-//function returns filter array of examlist
-export function filterExamsByUniversity(examsList: ExamInfo[], university: string) {
-    return examsList.filter((exam: ExamInfo) => exam.university === university);
+function byUniversity(examsList: ExamInfo[], university: string) {
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.university;
+        },
+        (x: any, searchResult: any) => {
+            return x.university === searchResult
+        }, examsList, university);
 }
 
+export default {
+    byGroup: byGroup,
+    byLecturer: byLecturer,
+    bySubject: bySubject,
+    byUniversity: byUniversity
+}
 
 
 

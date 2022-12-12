@@ -20,12 +20,18 @@ yarn
 <!-- TODO add instructions -->
 
 ## პროგრამის გამოყენება
-პირველ რიგში საჭიროა Build
+* პირველ რიგში საჭიროა Build
 ```sh
 yarn build
 ```
 
-პროგრამის გასაშვებად გამოიყენეთ
+* პროგრამის გასაშვებად გამოიყენეთ
 ```sh
-yarn start
+yarn start -l "Lecturer" -u "University" -s "subject" -g "group"
 ```
+შეგიძლიათ გამოიყენოთ მხოლოდ ის option რომლის მიხედვითაც გინდათ მოძებნა.
+მაგალითად:
+```sh
+yarn start -u "Freeuni" -s "შესავალი ციფრულ ტექნოლოგიებში"
+```
+
