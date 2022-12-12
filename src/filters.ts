@@ -3,57 +3,66 @@ import {ExamInfo} from "./interfaces/ExamInfo";
 const {Searcher} = require("fast-fuzzy");
 
 const searchOptions = {
-    threshold : .8,
+    threshold: .7,
+    returnMatchData: true
+}
+
+function mapAndFilterExamsList(mapFn: any, filterFn: any, examsList: any, searchString: string) {
+    let lecturersList = examsList.map(mapFn).flat();
+
+    lecturersList = [...new Set(lecturersList)]
+    const searcher = new Searcher(lecturersList);
+    let searchResults = searcher.search(searchString, searchOptions)
+
+    // Return match data can be true for debugging or other purposes
+    if (searchOptions.returnMatchData) {
+        searchResults = searchResults.map((obj: any) => obj.item);
+    }
+
+    return searchResults.map((searchResult: string) => {
+        return examsList.filter((x: any) => filterFn(x, searchResult));
+    }).flat();
 }
 
 function byLecturer(examsList: ExamInfo[], lecturer: string) {
-    let lecturersList = examsList.map(x => x.lecturers).flat();
-    lecturersList = [...new Set(lecturersList)]
-    const searcher = new Searcher(lecturersList);
-    const searchResults = searcher.search(lecturer, searchOptions)
-    return searchResults.map((searchResult: string) => {
-        return examsList.filter((exam => {
-            return exam.lecturers.includes(searchResult)
-        }))
-    }).flat();
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.lecturers;
+        },
+        (x: any, searchResult: any) => {
+            return x.lecturers.includes(searchResult)
+        }, examsList, lecturer);
 }
 
 function byGroup(examsList: ExamInfo[], group: string) {
-    let groupsList = examsList.map(x => x.groups).flat();
-    groupsList = [...new Set(groupsList)]
-    const searcher = new Searcher(groupsList);
-    const searchResults = searcher.search(group, searchOptions)
-    return searchResults.map((searchResult: string) => {
-        return examsList.filter((exam => {
-            return exam.groups.includes(searchResult)
-        }))
-    }).flat();
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.groups;
+        },
+        (x: any, searchResult: any) => {
+            return x.groups.includes(searchResult)
+        }, examsList, group);
 }
 
 function bySubject(examsList: ExamInfo[], subject: string) {
-    let subjectsList = examsList.map(x => x.subject);
-    subjectsList = [...new Set(subjectsList)]
-    const searcher = new Searcher(subjectsList);
-    const searchResults = searcher.search(subject, searchOptions)
-    return searchResults.map((searchResult: string) => {
-        return examsList.filter((exam => {
-            return exam.subject === searchResult
-        }))
-    }).flat();
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.subject;
+        },
+        (x: any, searchResult: any) => {
+            return x.subject === searchResult
+        }, examsList, subject);
 }
 
 function byUniversity(examsList: ExamInfo[], university: string) {
-    let universityList = examsList.map(x => x.university);
-    universityList = [...new Set(universityList)]
-    const searcher = new Searcher(universityList);
-    const searchResults = searcher.search(university, searchOptions)
-    return searchResults.map((searchResult: string) => {
-        return examsList.filter((exam => {
-            return exam.university === searchResult
-        }))
-    }).flat();
+    return mapAndFilterExamsList(
+        (x: any) => {
+            return x.university;
+        },
+        (x: any, searchResult: any) => {
+            return x.university === searchResult
+        }, examsList, university);
 }
-
 
 export default {
     byGroup: byGroup,
