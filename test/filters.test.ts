@@ -37,10 +37,9 @@ describe(`filtering exams`, () => {
         it(`first name in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "ია")).to.include(examInfo);
         })
-        it(`first name in search query, signature in schedule`, () => {
-            expect(filters.byLecturer([examInfoSignature], "ზაზა")).to.include(examInfoSignature);
-        })
-
+        // it(`first name in search query, signature in schedule`, () => {
+        //     expect(filters.byLecturer([examInfoSignature], "ზაზა")).to.include(examInfoSignature);
+        // })
         it(`substring in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "მღვდლ")).to.include(examInfo);
         })
