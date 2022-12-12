@@ -6,8 +6,8 @@ import {Command} from 'commander'
 
 
 function main() {
-    filterExams("Freeuni", "ი. მღვდ", undefined, undefined)
-    return ;
+    //filterExams("Freeuni", "ოსმ", undefined, undefined)
+    //return ;
     const program = new Command();
     program
         .option('-l, --lecturer <string>')

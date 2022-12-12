@@ -7,8 +7,8 @@ describe(`filtering exams`, () => {
         date: '29/10',
         time: '16:30-17:00',
         subject: 'შესავალი ციფრულ ტექნოლოგიებში',
-        lecturers: [ 'ია მღვდლიაშვილი' ],
-        groups: [ '22-03-01', '22-03-02', '22-08-01', '20-04-01' ],
+        lecturers: ['ია მღვდლიაშვილი'],
+        groups: ['22-03-01', '22-03-02', '22-08-01', '20-04-01'],
         university: 'Freeuni'
     }
 
@@ -61,7 +61,6 @@ describe(`filtering exams`, () => {
         it(`single word in search query`, () => {
             expect(filters.bySubject([examInfo], "შესავალი")).to.include(examInfo);
         })
-
         it(`typo in search query`, () => {
             expect(filters.bySubject([examInfo], "შესქვსალი ცფრულ ტექოლოგიბში")).to.include(examInfo);
         })
@@ -71,9 +70,23 @@ describe(`filtering exams`, () => {
         it(`typo in substring in search query`, () => {
             expect(filters.bySubject([examInfo], "ტეხნოლოგიები")).to.include(examInfo);
         })
-
         it(`other subject name in search query`, () => {
             expect(filters.bySubject([examInfo], "კალკულუსი")).to.not.include(examInfo);
+        })
+    })
+
+    describe(`byUniversity should find lecture by name`, () => {
+        it(`full university name in search query`, () => {
+            expect(filters.byUniversity([examInfo], "Freeuni")).to.include(examInfo);
+        })
+        it(`typo in search query`, () => {
+            expect(filters.byUniversity([examInfo], "freeumi")).to.include(examInfo);
+        })
+        it(`substring in search query`, () => {
+            expect(filters.byUniversity([examInfo], "fre")).to.include(examInfo);
+        })
+        it(`other university name in search query`, () => {
+            expect(filters.byUniversity([examInfo], "Agruni")).to.not.include(examInfo);
         })
     })
 
