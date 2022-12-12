@@ -58,6 +58,3 @@ export default {
     bySubject: bySubject,
     byUniversity: byUniversity
 }
-
-
-
