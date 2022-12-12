@@ -4,13 +4,9 @@ import filters from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
 
-const searchOptions = {
-    threshold : .8,
-}
-
 
 function main() {
-    filterExams("Freeuni", "ი. მღვლიაშვილი", "შესავალი", undefined)
+    filterExams("Freeuni", "ი. მღვდ", undefined, undefined)
     return ;
     const program = new Command();
     program
@@ -30,16 +26,16 @@ function filterExams(university: string | undefined, lecturer: string | undefine
         .then((auth: any) => getExamList(auth))
         .then((filteredExams: ExamInfo[]) => {
             if (subject !== undefined) {
-                filteredExams = filters.bySubject(filteredExams, subject, searchOptions)
+                filteredExams = filters.bySubject(filteredExams, subject)
             }
             if (lecturer !== undefined) {
-                filteredExams = filters.byLecturer(filteredExams, lecturer, searchOptions)
+                filteredExams = filters.byLecturer(filteredExams, lecturer)
             }
             if (group !== undefined) {
-                filteredExams = filters.byGroup(filteredExams, group, searchOptions)
+                filteredExams = filters.byGroup(filteredExams, group)
             }
             if (university !== undefined) {
-                filteredExams = filters.byUniversity(filteredExams, university, searchOptions)
+                filteredExams = filters.byUniversity(filteredExams, university)
             }
             console.log(filteredExams)
         })

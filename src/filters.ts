@@ -2,7 +2,11 @@ import {ExamInfo} from "./interfaces/ExamInfo";
 
 const {Searcher} = require("fast-fuzzy");
 
-function byLecturer(examsList: ExamInfo[], lecturer: string, searchOptions : any) {
+const searchOptions = {
+    threshold : .8,
+}
+
+function byLecturer(examsList: ExamInfo[], lecturer: string) {
     let lecturersList = examsList.map(x => x.lecturers).flat();
     lecturersList = [...new Set(lecturersList)]
     const searcher = new Searcher(lecturersList);
@@ -14,7 +18,7 @@ function byLecturer(examsList: ExamInfo[], lecturer: string, searchOptions : any
     }).flat();
 }
 
-function byGroup(examsList: ExamInfo[], group: string, searchOptions : any) {
+function byGroup(examsList: ExamInfo[], group: string) {
     let groupsList = examsList.map(x => x.groups).flat();
     groupsList = [...new Set(groupsList)]
     const searcher = new Searcher(groupsList);
@@ -26,7 +30,7 @@ function byGroup(examsList: ExamInfo[], group: string, searchOptions : any) {
     }).flat();
 }
 
-function bySubject(examsList: ExamInfo[], subject: string, searchOptions : any) {
+function bySubject(examsList: ExamInfo[], subject: string) {
     let subjectsList = examsList.map(x => x.subject);
     subjectsList = [...new Set(subjectsList)]
     const searcher = new Searcher(subjectsList);
@@ -38,7 +42,7 @@ function bySubject(examsList: ExamInfo[], subject: string, searchOptions : any) 
     }).flat();
 }
 
-function byUniversity(examsList: ExamInfo[], university: string, searchOptions : any) {
+function byUniversity(examsList: ExamInfo[], university: string) {
     let universityList = examsList.map(x => x.university);
     universityList = [...new Set(universityList)]
     const searcher = new Searcher(universityList);
