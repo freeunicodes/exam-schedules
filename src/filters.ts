@@ -1,37 +1,55 @@
 import {ExamInfo} from "./interfaces/ExamInfo";
 
-// Function returns true if this lecturer is owner of this exam
-// TODO: It would be better if all this was implemented with regex (at least make it better or tests will start to fail)
-function containsLecturer(exam: ExamInfo, lecturer: string) {
-    let lecturerNameFirstLetter = lecturer[0];
-    let lecturerLastName = lecturer.split(" ")[1];
-    let lecturerSign = lecturerNameFirstLetter + " " + lecturerLastName;
-    let lecturerArray = exam.lecturers;
-    let containsSignature = lecturerArray.some(el => el[0] === lecturerNameFirstLetter && el.split(" ")[1] === lecturerLastName);
-    return lecturerArray.includes(lecturer) || lecturerArray.includes(lecturerSign) || containsSignature;
+const {Searcher} = require("fast-fuzzy");
+
+function byLecturer(examsList: ExamInfo[], lecturer: string, searchOptions : any) {
+    let lecturersList = examsList.map(x => x.lecturers).flat();
+    lecturersList = [...new Set(lecturersList)]
+    const searcher = new Searcher(lecturersList);
+    const searchResults = searcher.search(lecturer, searchOptions)
+    return searchResults.map((searchResult: string) => {
+        return examsList.filter((exam => {
+            return exam.lecturers.includes(searchResult)
+        }))
+    }).flat();
 }
 
-function byLecturer(examsList: ExamInfo[], lecturer: string) {
-    return examsList.filter((exam: ExamInfo) => containsLecturer(exam, lecturer));
+function byGroup(examsList: ExamInfo[], group: string, searchOptions : any) {
+    let groupsList = examsList.map(x => x.groups).flat();
+    groupsList = [...new Set(groupsList)]
+    const searcher = new Searcher(groupsList);
+    const searchResults = searcher.search(group, searchOptions)
+    return searchResults.map((searchResult: string) => {
+        return examsList.filter((exam => {
+            return exam.groups.includes(searchResult)
+        }))
+    }).flat();
 }
 
-// Function returns true if this group is one of the groups of the exam
-function containsGroup(exam: ExamInfo, group: string) {
-    let groupsArray = exam.groups;
-    return groupsArray.includes(group);
+function bySubject(examsList: ExamInfo[], subject: string, searchOptions : any) {
+    let subjectsList = examsList.map(x => x.subject);
+    subjectsList = [...new Set(subjectsList)]
+    const searcher = new Searcher(subjectsList);
+    const searchResults = searcher.search(subject, searchOptions)
+    return searchResults.map((searchResult: string) => {
+        return examsList.filter((exam => {
+            return exam.subject === searchResult
+        }))
+    }).flat();
 }
 
-function byGroup(examsList: ExamInfo[], group: string) {
-    return examsList.filter((exam: ExamInfo) => containsGroup(exam, group));
+function byUniversity(examsList: ExamInfo[], university: string, searchOptions : any) {
+    let universityList = examsList.map(x => x.university);
+    universityList = [...new Set(universityList)]
+    const searcher = new Searcher(universityList);
+    const searchResults = searcher.search(university, searchOptions)
+    return searchResults.map((searchResult: string) => {
+        return examsList.filter((exam => {
+            return exam.university === searchResult
+        }))
+    }).flat();
 }
 
-function bySubject(examsList: ExamInfo[], subject: string) {
-    return examsList.filter((exam: ExamInfo) => exam.subject.includes(subject));
-}
-
-function byUniversity(examsList: ExamInfo[], university: string) {
-    return examsList.filter((exam: ExamInfo) => exam.university === university);
-}
 
 export default {
     byGroup: byGroup,
