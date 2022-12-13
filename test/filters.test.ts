@@ -9,7 +9,8 @@ describe(`filtering exams`, () => {
         subject: 'შესავალი ციფრულ ტექნოლოგიებში',
         lecturers: ['ია მღვდლიაშვილი'],
         groups: ['22-03-01', '22-03-02', '22-08-01', '20-04-01'],
-        university: 'Freeuni'
+        university: 'Freeuni',
+        matchScore: 0
     }
 
     const examInfoSignature: ExamInfo = {
@@ -18,7 +19,8 @@ describe(`filtering exams`, () => {
         subject: 'ფიზიკა',
         lecturers: ['ზ ოსმანოვი'],
         groups: ['20-06-01'],
-        university: 'Freeuni'
+        university: 'Freeuni',
+        matchScore: 0
     }
 
     describe(`byLecturer should find lecture by name`, () => {

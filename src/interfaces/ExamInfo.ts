@@ -5,4 +5,5 @@ export interface ExamInfo {
     lecturers: string[],
     groups: string[],
     university: string
+    matchScore: number
 }

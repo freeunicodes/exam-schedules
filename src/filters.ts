@@ -14,13 +14,14 @@ function mapAndFilterExamsList(mapFn: any, filterFn: any, examsList: any, search
     const searcher = new Searcher(mappedList);
     let searchResults = searcher.search(searchString, searchOptions)
 
-    // Return match data can be true for debugging or other purposes
-    if (searchOptions.returnMatchData) {
-        searchResults = searchResults.map((obj: any) => obj.item);
-    }
-
-    return searchResults.map((searchResult: string) => {
-        return examsList.filter((x: any) => filterFn(x, searchResult));
+    return searchResults.map((searchResult: any) => {
+        return examsList.filter((exam: any) => {
+            let isOkayExam = filterFn(exam, searchResult.item);
+            if (isOkayExam) {
+                exam.matchScore += searchResult.score;
+            }
+            return isOkayExam
+        })
     }).flat();
 }
 

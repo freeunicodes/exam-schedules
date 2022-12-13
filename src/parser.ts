@@ -54,7 +54,8 @@ async function getExamListForDate(range: string, sheets: any) {
             subject: row[1],
             lecturers: lecturersArray,
             groups: groupsArray,
-            university: row[4]
+            university: row[4],
+            matchScore: 0
         }
         //console.log(examInfo)
         return examInfo;

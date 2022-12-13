@@ -6,6 +6,8 @@ import {Command} from 'commander'
 
 
 function main() {
+    //filterExams("euni", undefined, "წრედები")
+    //return;
     const program = new Command();
     program
         .option('-l, --lecturer <string>')
@@ -31,6 +33,7 @@ function filterExams(university: string | undefined, lecturer: string | undefine
             if (university !== undefined) {
                 filteredExams = filters.byUniversity(filteredExams, university)
             }
+            filteredExams.sort((a, b) => b.matchScore - a.matchScore);
             console.log(filteredExams)
         })
         .catch(console.error);
