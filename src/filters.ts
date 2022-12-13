@@ -31,13 +31,6 @@ function byLecturer(examsList: ExamInfo[], lecturer: string) {
         examsList, lecturer);
 }
 
-function byGroup(examsList: ExamInfo[], group: string) {
-    return mapAndFilterExamsList(
-        (x: any) => x.groups,
-        (x: any, searchResult: any) => x.groups.includes(searchResult),
-        examsList, group);
-}
-
 function bySubject(examsList: ExamInfo[], subject: string) {
     return mapAndFilterExamsList(
         (x: any) => x.subject,
@@ -53,7 +46,6 @@ function byUniversity(examsList: ExamInfo[], university: string) {
 }
 
 export default {
-    byGroup: byGroup,
     byLecturer: byLecturer,
     bySubject: bySubject,
     byUniversity: byUniversity

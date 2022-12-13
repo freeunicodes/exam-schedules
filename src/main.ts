@@ -10,16 +10,15 @@ function main() {
     program
         .option('-l, --lecturer <string>')
         .option('-s, --subject <string>')
-        .option('-g, --group <string>')
         .option('-u, --university <string>')
         .action((options) => {
-            filterExams(options.university, options.lecturer, options.subject, options.group)
+            filterExams(options.university, options.lecturer, options.subject)
         })
     program.parse()
 }
 
 function filterExams(university: string | undefined, lecturer: string | undefined,
-                     subject: string | undefined, group: string | undefined) {
+                     subject: string | undefined) {
     authorize()
         .then((auth: any) => getExamList(auth))
         .then((filteredExams: ExamInfo[]) => {
@@ -28,9 +27,6 @@ function filterExams(university: string | undefined, lecturer: string | undefine
             }
             if (lecturer !== undefined) {
                 filteredExams = filters.byLecturer(filteredExams, lecturer)
-            }
-            if (group !== undefined) {
-                filteredExams = filters.byGroup(filteredExams, group)
             }
             if (university !== undefined) {
                 filteredExams = filters.byUniversity(filteredExams, university)
