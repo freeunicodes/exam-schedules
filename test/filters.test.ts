@@ -23,7 +23,7 @@ describe(`filtering exams`, () => {
         matchScore: 0
     }
 
-    describe(`byLecturer should find lecture by name`, () => {
+    describe(`byLecturer should find exam by lecturer name`, () => {
         it(`full name in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "ია მღვდლიაშვილი")).to.include(examInfo);
         })
@@ -39,16 +39,12 @@ describe(`filtering exams`, () => {
         it(`first name in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "ია")).to.include(examInfo);
         })
-        // it(`first name in search query, signature in schedule`, () => {
-        //     expect(filters.byLecturer([examInfoSignature], "ზაზა")).to.include(examInfoSignature);
-        // })
         it(`substring in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "მღვდლ")).to.include(examInfo);
         })
         it(`substring in search query, signature in schedule`, () => {
             expect(filters.byLecturer([examInfoSignature], "ოსმა")).to.include(examInfoSignature);
         })
-
         it(`wrong name in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "ნიკა")).to.not.include(examInfo);
         })
@@ -57,7 +53,7 @@ describe(`filtering exams`, () => {
         })
     })
 
-    describe(`bySubject should find lecture by name`, () => {
+    describe(`bySubject should find exam by subject name`, () => {
         it(`full name in search query`, () => {
             expect(filters.bySubject([examInfo], "შესავალი ციფრულ ტექნოლოგიებში")).to.include(examInfo);
         })
@@ -78,7 +74,7 @@ describe(`filtering exams`, () => {
         })
     })
 
-    describe(`byUniversity should find lecture by name`, () => {
+    describe(`byUniversity should find exam by university name`, () => {
         it(`full university name in search query`, () => {
             expect(filters.byUniversity([examInfo], "Freeuni")).to.include(examInfo);
         })
