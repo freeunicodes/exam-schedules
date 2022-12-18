@@ -12,17 +12,20 @@ function mapAndFilterExamsList(mapFn: any, filterFn: any, examsList: any, search
 
     mappedList = [...new Set(mappedList)]
     const searcher = new Searcher(mappedList);
-    let searchResults = searcher.search(searchString, searchOptions)
+    const searchResults = searcher.search(searchString, searchOptions)
 
-    return searchResults.map((searchResult: any) => {
+
+    const searches =  searchResults.map((searchResult: any) => {
         return examsList.filter((exam: any) => {
-            let isOkayExam = filterFn(exam, searchResult.item);
-            if (isOkayExam) {
-                exam.matchScore += searchResult.score;
+            return filterFn(exam, searchResult.item)
+        }).map((exam: ExamInfo) =>{
+            return {
+                searchExam: exam,
+                searchScore: searchResult.score
             }
-            return isOkayExam
         })
     }).flat();
+    return searches;
 }
 
 function byLecturer(examsList: ExamInfo[], lecturer: string) {

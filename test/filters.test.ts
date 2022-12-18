@@ -9,8 +9,7 @@ describe(`filtering exams`, () => {
         subject: 'შესავალი ციფრულ ტექნოლოგიებში',
         lecturers: ['ია მღვდლიაშვილი'],
         groups: ['22-03-01', '22-03-02', '22-08-01', '20-04-01'],
-        university: 'Freeuni',
-        matchScore: 0
+        university: 'Freeuni'
     }
 
     const examInfoSignature: ExamInfo = {
@@ -19,13 +18,21 @@ describe(`filtering exams`, () => {
         subject: 'ფიზიკა',
         lecturers: ['ზ ოსმანოვი'],
         groups: ['20-06-01'],
-        university: 'Freeuni',
-        matchScore: 0
+        university: 'Freeuni'
     }
 
+    function testFilterFunction(filterFn : any, examInfo: any, searchString: string, shouldInclude: boolean){
+        if(shouldInclude)
+            expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.include(examInfo)
+        else
+            expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.not.include(examInfo)
+    }
+
+    //TODO
     describe(`byLecturer should find exam by lecturer name`, () => {
         it(`full name in search query, full name in schedule`, () => {
-            expect(filters.byLecturer([examInfo], "ია მღვდლიაშვილი")).to.include(examInfo);
+            testFilterFunction(filters.byLecturer,examInfo,"ია მღვდლიაშვილი",true)
+            //expect(filters.byLecturer([examInfo], "")).to.include(examInfo);
         })
         it(`signature in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "ი. მღვდლიაშვილი")).to.include(examInfo);
@@ -49,7 +56,8 @@ describe(`filtering exams`, () => {
             expect(filters.byLecturer([examInfo], "ნიკა")).to.not.include(examInfo);
         })
         it(`wrong name in search query, signature in schedule`, () => {
-            expect(filters.byLecturer([examInfoSignature], "ნიკა")).to.not.include(examInfoSignature);
+            testFilterFunction(filters.byLecturer,examInfoSignature,"ნიკა",false)
+            //expect(filters.byLecturer([examInfoSignature], "ნიკა")).to.not.include(examInfoSignature);
         })
     })
 

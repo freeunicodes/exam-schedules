@@ -6,7 +6,7 @@ import {Command} from 'commander'
 
 
 function main() {
-    //authAndGetData("euni", "რურუა", "წრედები")
+    //authAndGetData("freeuni", "რურუა", "წრედები")
     //return;
     const program = new Command();
     program
@@ -19,54 +19,48 @@ function main() {
     program.parse()
 }
 
-function sumSimilarExamsMatchScore(filteredExams: ExamInfo[]) {
+function sumSimilarExamsMatchScore(filteredExams: any[]) {
     for (let i = 0; i < filteredExams.length; i++) {
         for (let j = i + 1; j < filteredExams.length; j++) {
-            if (filteredExams[i].matchScore != 0 && filteredExams[j].matchScore != 0) {
-                let exam1: ExamInfo = structuredClone(filteredExams[i]);
-                let exam2: ExamInfo = structuredClone(filteredExams[j]);
-                exam1.matchScore = 0;
-                exam2.matchScore = 0;
-                if (JSON.stringify(exam1) == JSON.stringify(exam2)) {
-                    filteredExams[i].matchScore += filteredExams[j].matchScore
-                    filteredExams[j].matchScore = 0
+            if (filteredExams[i].searchScore != 0 && filteredExams[j].searchScore != 0) {
+                if (JSON.stringify(filteredExams[i].searchExam) === JSON.stringify(filteredExams[j].searchExam)) {
+                    filteredExams[i].searchScore += filteredExams[j].searchScore
+                    filteredExams[j].searchScore = 0
                 }
             }
         }
     }
-    filteredExams = filteredExams.filter((exam: ExamInfo) => exam.matchScore > 0)
+    filteredExams = filteredExams.filter((exam: any) => exam.searchScore > 0)
     return filteredExams;
 }
 
-function filterExams(examsList : ExamInfo[],university: string | undefined, lecturer: string | undefined,
-                     subject: string | undefined){
-    let filteredExams: ExamInfo[] = [];
+function filterExams(examsList: ExamInfo[], university: string | undefined, lecturer: string | undefined,
+                     subject: string | undefined) {
+    let filteredExams: any = [];
 
     if (subject !== undefined) {
-        let copyForBySubject = structuredClone(examsList)
-        let filteredExamsBySubject = filters.bySubject(copyForBySubject, subject)
+        let filteredExamsBySubject = filters.bySubject(examsList, subject)
         filteredExams.push(...filteredExamsBySubject)
     }
     if (lecturer !== undefined) {
-        let copyForByLecturer = structuredClone(examsList)
-        let filteredExamsByLecturer = filters.byLecturer(copyForByLecturer, lecturer)
+        let filteredExamsByLecturer = filters.byLecturer(examsList, lecturer)
         filteredExams.push(...filteredExamsByLecturer)
     }
 
     filteredExams = sumSimilarExamsMatchScore(filteredExams)
+    filteredExams.sort((a: any, b: any) => b.searchScore - a.searchScore)
+    filteredExams = filteredExams.map((exam: any) => exam.searchExam)
 
     if (university !== undefined) {
-        filteredExams = filters.byUniversity(filteredExams, university)
+        let filteredExamsByUniversity = filters.byUniversity(filteredExams, university).map((exam: any) => exam.searchExam)
+        filteredExams = filteredExams.filter((exam: ExamInfo) => filteredExamsByUniversity.includes(exam))
     }
 
-    filteredExams.sort((a, b) => b.matchScore - a.matchScore);
-
-    //console.log(filteredExams)
     return filteredExams;
 }
 
 function authAndGetData(university: string | undefined, lecturer: string | undefined,
-                     subject: string | undefined) {
+                        subject: string | undefined) {
     authorize()
         .then((auth: any) => getExamList(auth))
         .then((examsList: ExamInfo[]) => {
