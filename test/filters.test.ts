@@ -32,19 +32,18 @@ describe(`filtering exams`, () => {
     describe(`byLecturer should find exam by lecturer name`, () => {
         it(`full name in search query, full name in schedule`, () => {
             testFilterFunction(filters.byLecturer,examInfo,"ია მღვდლიაშვილი",true)
-            //expect(filters.byLecturer([examInfo], "")).to.include(examInfo);
         })
         it(`signature in search query, full name in schedule`, () => {
-            expect(filters.byLecturer([examInfo], "ი. მღვდლიაშვილი")).to.include(examInfo);
+            testFilterFunction(filters.byLecturer, examInfo, "ი. მღვდლიაშვილი", true);
         })
         it(`full name in search query, signature in schedule`, () => {
-            expect(filters.byLecturer([examInfoSignature], "ზაზა ოსმანოვი")).to.include(examInfoSignature);
+            testFilterFunction(filters.byLecturer, examInfoSignature, "ზაზა ოსმანოვი", true);
         })
         it(`signature in search query, signature in schedule`, () => {
-            expect(filters.byLecturer([examInfoSignature], "ზ. ოსმანოვი")).to.include(examInfoSignature);
+            testFilterFunction(filters.byLecturer, examInfoSignature, "ზ. ოსმანოვი", true);
         })
         it(`first name in search query, full name in schedule`, () => {
-            expect(filters.byLecturer([examInfo], "ია")).to.include(examInfo);
+            testFilterFunction(filters.byLecturer, examInfo, "ია", true);
         })
         it(`substring in search query, full name in schedule`, () => {
             expect(filters.byLecturer([examInfo], "მღვდლ")).to.include(examInfo);
