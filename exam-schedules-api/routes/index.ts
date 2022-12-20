@@ -1,8 +1,9 @@
-import {ExamInfo} from "../../src/interfaces/ExamInfo";
-import filters from "../../src/filters";
+// import {ExamInfo} from "exam-schedules-lib/src/interfaces/ExamInfo";
+
+import {ExamInfo} from "exam-schedules-lib/src/interfaces/ExamInfo";
 
 const express = require('express');
-const {authAndGetData} = require("../../src/main");
+const {authAndGetData, filters} = require('exam-schedules-lib');
 const router = express.Router();
 
 const delay = new Date(0, 0, 0, 0, 5);

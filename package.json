@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "workspaces": [
+    "exam-schedules-lib",
+    "exam-schedules-api"
+  ]
+}
