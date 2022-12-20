@@ -4,7 +4,6 @@ import filters from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
 
-
 function main() {
     //authAndGetData("freeuni", "რურუა", "წრედები")
     //return;
@@ -14,7 +13,7 @@ function main() {
         .option('-s, --subject <string>')
         .option('-u, --university <string>')
         .action((options) => {
-            authAndGetData(options.university, options.lecturer, options.subject)
+            authAndGetFilteredData(options.university, options.lecturer, options.subject)
         })
     program.parse()
 }
@@ -59,7 +58,7 @@ function filterExams(examsList: ExamInfo[], university: string | undefined, lect
     return filteredExams;
 }
 
-function authAndGetData(university: string | undefined, lecturer: string | undefined,
+function authAndGetFilteredData(university: string | undefined, lecturer: string | undefined,
                         subject: string | undefined) {
     authorize()
         .then((auth: any) => getExamList(auth))
@@ -68,6 +67,16 @@ function authAndGetData(university: string | undefined, lecturer: string | undef
         })
         .catch(console.error);
 }
+
+export async function authAndGetData() {
+     return authorize()
+        .then((auth: any) => getExamList(auth))
+        .then((examsList: ExamInfo[]) => {
+            return examsList;
+        })
+        .catch(console.error);
+}
+
 
 if (require.main === module) {
     main();

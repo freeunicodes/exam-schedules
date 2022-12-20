@@ -21,19 +21,19 @@ describe(`filtering exams`, () => {
         university: 'Freeuni'
     }
 
-    function testFilterFunction(filterFn: any, examInfo: any, searchString: string, shouldInclude: boolean) {
-        if (shouldInclude)
-            expect(filterFn([examInfo], searchString).map((exam: any) => exam.searchExam)).to.include(examInfo)
+    function testFilterFunction(filterFn : any, examInfo: any, searchString: string, shouldInclude: boolean){
+        if(shouldInclude)
+            expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.include(examInfo)
         else
-            expect(filterFn([examInfo], searchString).map((exam: any) => exam.searchExam)).to.not.include(examInfo)
+            expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.not.include(examInfo)
     }
 
     describe(`byLecturer should find exam by lecturer name`, () => {
         it(`full name in search query, full name in schedule`, () => {
-            testFilterFunction(filters.byLecturer, examInfo, "ია მღვდლიაშვილი", true)
+            testFilterFunction(filters.byLecturer,examInfo,"ია მღვდლიაშვილი",true)
         })
         it(`signature in search query, full name in schedule`, () => {
-            testFilterFunction(filters.byLecturer, examInfo, "ი. მღვდლიაშვილი", true)
+            testFilterFunction(filters.byLecturer,examInfo, "ი. მღვდლიაშვილი",true)
         })
         it(`full name in search query, signature in schedule`, () => {
             testFilterFunction(filters.byLecturer, examInfoSignature, "ზაზა ოსმანოვი", true)
@@ -54,7 +54,7 @@ describe(`filtering exams`, () => {
             testFilterFunction(filters.byLecturer, examInfo, "ნიკა", false)
         })
         it(`wrong name in search query, signature in schedule`, () => {
-            testFilterFunction(filters.byLecturer, examInfoSignature, "ნიკა", false)
+            testFilterFunction(filters.byLecturer,examInfoSignature,"ნიკა",false)
         })
     })
 
