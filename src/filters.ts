@@ -8,68 +8,49 @@ const searchOptions = {
 }
 
 function mapAndFilterExamsList(mapFn: any, filterFn: any, examsList: any, searchString: string) {
-    let lecturersList = examsList.map(mapFn).flat();
+    let mappedList = examsList.map(mapFn).flat();
 
-    lecturersList = [...new Set(lecturersList)]
-    const searcher = new Searcher(lecturersList);
-    let searchResults = searcher.search(searchString, searchOptions)
+    mappedList = [...new Set(mappedList)]
+    const searcher = new Searcher(mappedList);
+    const searchResults = searcher.search(searchString, searchOptions)
 
-    // Return match data can be true for debugging or other purposes
-    if (searchOptions.returnMatchData) {
-        searchResults = searchResults.map((obj: any) => obj.item);
-    }
 
-    return searchResults.map((searchResult: string) => {
-        return examsList.filter((x: any) => filterFn(x, searchResult));
+    const searches =  searchResults.map((searchResult: any) => {
+        return examsList.filter((exam: any) => {
+            return filterFn(exam, searchResult.item)
+        }).map((exam: ExamInfo) =>{
+            return {
+                searchExam: exam,
+                searchScore: searchResult.score
+            }
+        })
     }).flat();
+    return searches;
 }
 
 function byLecturer(examsList: ExamInfo[], lecturer: string) {
     return mapAndFilterExamsList(
-        (x: any) => {
-            return x.lecturers;
-        },
-        (x: any, searchResult: any) => {
-            return x.lecturers.includes(searchResult)
-        }, examsList, lecturer);
-}
-
-function byGroup(examsList: ExamInfo[], group: string) {
-    return mapAndFilterExamsList(
-        (x: any) => {
-            return x.groups;
-        },
-        (x: any, searchResult: any) => {
-            return x.groups.includes(searchResult)
-        }, examsList, group);
+        (x: any) => x.lecturers,
+        (x: any, searchResult: any) => x.lecturers.includes(searchResult),
+        examsList, lecturer);
 }
 
 function bySubject(examsList: ExamInfo[], subject: string) {
     return mapAndFilterExamsList(
-        (x: any) => {
-            return x.subject;
-        },
-        (x: any, searchResult: any) => {
-            return x.subject === searchResult
-        }, examsList, subject);
+        (x: any) => x.subject,
+        (x: any, searchResult: any) => x.subject === searchResult,
+        examsList, subject);
 }
 
 function byUniversity(examsList: ExamInfo[], university: string) {
     return mapAndFilterExamsList(
-        (x: any) => {
-            return x.university;
-        },
-        (x: any, searchResult: any) => {
-            return x.university === searchResult
-        }, examsList, university);
+        (x: any) => x.university,
+        (x: any, searchResult: any) => x.university === searchResult,
+        examsList, university);
 }
 
 export default {
-    byGroup: byGroup,
     byLecturer: byLecturer,
     bySubject: bySubject,
     byUniversity: byUniversity
 }
-
-
-

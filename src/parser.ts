@@ -11,13 +11,12 @@ const getExamDates = async (sheets: any, spreadsheetId: any) => {
     result = result.map((sheet: any) => {
         return sheet.properties.title
     })
-    //To-Do
-    //radgan mteli info ver moaqvs mxolod nawil sheetebs ganvixilav da vabrunebineb, shemdgomshi rame unda movufiqrot
-    result = result.slice(0, 30);
+    // TODO
+    result = result.slice(0, 10);
     return result;
 }
 
-// Get spreadsheet Id from file
+// Get spreadsheet ID from file
 function getSpreadsheetId(): string {
     if (!fs.existsSync("./data/SpreadsheetId.json")) {
         throw new Error(`SpreadsheetId.json not found in ./data/ directory`);
