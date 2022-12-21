@@ -5,7 +5,7 @@ import {getExamList} from "./parser";
 import {Command} from 'commander'
 
 function main() {
-    //authAndGetData("freeuni", "რურუა", "წრედები")
+    //authAndGetFilteredData("freeuni", "რურუა", "წრედები")
     //return;
     const program = new Command();
     program

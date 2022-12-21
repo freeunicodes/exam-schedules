@@ -1,5 +1,4 @@
 const {google} = require('googleapis');
-const {authorize} = require("./google-auth");
 const fs = require("fs");
 import {ExamInfo} from "./interfaces/ExamInfo";
 
@@ -12,16 +11,17 @@ const getExamDates = async (sheets: any, spreadsheetId: any) => {
         return sheet.properties.title
     })
     // TODO
-    result = result.slice(0, 10);
+    result = result.slice(0, 30);
     return result;
 }
 
 // Get spreadsheet ID from file
 function getSpreadsheetId(): string {
-    if (!fs.existsSync("./data/SpreadsheetId.json")) {
-        throw new Error(`SpreadsheetId.json not found in ./data/ directory`);
+    let spreadsheedIdPath = "../data/SpreadsheetId.json"
+    if (!fs.existsSync(spreadsheedIdPath)) {
+        throw new Error(`SpreadsheetId.json not found in ../data/ directory`);
     }
-    return JSON.parse(fs.readFileSync("./data/SpreadsheetId.json").toString()).spreadsheetId;
+    return JSON.parse(fs.readFileSync(spreadsheedIdPath).toString()).spreadsheetId;
 }
 
 // Returns array of examInfo for this date
