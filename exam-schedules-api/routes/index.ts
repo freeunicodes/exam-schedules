@@ -1,25 +1,43 @@
 import {ExamInfo} from "exam-schedules-lib/src/interfaces/ExamInfo";
 
 const express = require('express');
-const {authAndGetData, filters} = require('exam-schedules-lib');
+const {authAndGetData} = require('exam-schedules-lib');
 const router = express.Router();
 
-const delay = new Date(0, 0, 0, 0, 1 );
+const delay = new Date(0, 0, 0, 0, 1);
 
-let lastFetchTime: number;
-let examsList: ExamInfo[];
+interface State {
+    lastFetchTime?: number
+    examsList: ExamInfo[]
+}
+
+let fetchInfo: State = {
+    lastFetchTime: undefined,
+    examsList: []
+}
+
+function getCachedState(): State {
+    return fetchInfo;
+}
 
 router.use((req: any, res: any, next: any) => {
-    if (lastFetchTime === undefined || (Date.now() - lastFetchTime) > delay.getMilliseconds()) {
+    if (fetchInfo.lastFetchTime === undefined || (Date.now() - fetchInfo.lastFetchTime) > delay.getMilliseconds()) {
         console.log("Now fetching")
-        authAndGetData().then((response : ExamInfo[]) => examsList = response);
-        lastFetchTime = Date.now()
+        authAndGetData().then((response: ExamInfo[]) => {
+            fetchInfo.examsList = response
+            fetchInfo.lastFetchTime = Date.now()
+            next()
+        });
+    } else {
+        next()
     }
-    next()
 })
 
 router.get('/', function (req: any, res: any) {
-    res.send({response: examsList});
+    res.send(fetchInfo);
 })
 
-module.exports = router;
+export default {
+    router: router,
+    getCachedState: getCachedState
+};
