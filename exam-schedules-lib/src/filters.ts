@@ -14,18 +14,16 @@ function mapAndFilterExamsList(mapFn: any, filterFn: any, examsList: any, search
     const searcher = new Searcher(mappedList);
     const searchResults = searcher.search(searchString, searchOptions)
 
-
-    const searches =  searchResults.map((searchResult: any) => {
+    return searchResults.map((searchResult: any) => {
         return examsList.filter((exam: any) => {
             return filterFn(exam, searchResult.item)
-        }).map((exam: ExamInfo) =>{
+        }).map((exam: ExamInfo) => {
             return {
                 searchExam: exam,
                 searchScore: searchResult.score
             }
         })
     }).flat();
-    return searches;
 }
 
 function byLecturer(examsList: ExamInfo[], lecturer: string) {

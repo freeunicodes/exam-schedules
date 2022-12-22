@@ -5,8 +5,6 @@ import {getExamList} from "./parser";
 import {Command} from 'commander'
 
 function main() {
-    //authAndGetFilteredData("freeuni", "რურუა", "წრედები")
-    //return;
     const program = new Command();
     program
         .option('-l, --lecturer <string>')
@@ -20,17 +18,14 @@ function main() {
 
 
 function authAndGetFilteredData(university: string | undefined, lecturer: string | undefined,
-                        subject: string | undefined) {
-    authorize()
-        .then((auth: any) => getExamList(auth))
-        .then((examsList: ExamInfo[]) => {
-            console.log(filters.filterExams(examsList, university, lecturer, subject))
-        })
-        .catch(console.error);
+                                subject: string | undefined) {
+    authAndGetData().then((examsList: ExamInfo[] | void) => {
+        console.log(filters.filterExams(examsList!, university, lecturer, subject))
+    })
 }
 
 export async function authAndGetData() {
-     return authorize()
+    return authorize()
         .then((auth: any) => getExamList(auth))
         .then((examsList: ExamInfo[]) => {
             return examsList;

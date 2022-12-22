@@ -23,9 +23,9 @@ describe(`filtering exams`, () => {
 
     function testFilterFunction(filterFn : any, examInfo: any, searchString: string, shouldInclude: boolean){
         if(shouldInclude)
-            expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.include(examInfo)
+            return expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.include(examInfo)
         else
-            expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.not.include(examInfo)
+            return expect(filterFn([examInfo], searchString).map((exam:any) => exam.searchExam)).to.not.include(examInfo)
     }
 
     describe(`byLecturer should find exam by lecturer name`, () => {

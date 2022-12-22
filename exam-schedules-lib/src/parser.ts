@@ -17,11 +17,11 @@ const getExamDates = async (sheets: any, spreadsheetId: any) => {
 
 // Get spreadsheet ID from file
 function getSpreadsheetId(): string {
-    let spreadsheedIdPath = "../data/SpreadsheetId.json"
-    if (!fs.existsSync(spreadsheedIdPath)) {
+    let spreadsheetdIdPath = "../data/SpreadsheetId.json"
+    if (!fs.existsSync(spreadsheetdIdPath)) {
         throw new Error(`SpreadsheetId.json not found in ../data/ directory`);
     }
-    return JSON.parse(fs.readFileSync(spreadsheedIdPath).toString()).spreadsheetId;
+    return JSON.parse(fs.readFileSync(spreadsheetdIdPath).toString()).spreadsheetId;
 }
 
 // Returns array of examInfo for this date
@@ -34,11 +34,9 @@ async function getExamListForDate(range: string, sheets: any) {
     const rows = res.data.values;
 
     if (!rows || rows.length === 0) {
-        //console.log(`No data found for ${range}.`);
         return undefined;
     }
     return rows.map((row: any) => {
-        //console.log(row)
         if (row.length < 5 || row.includes(undefined)) return undefined;
         let lecturersArray = row[2].split(",");
         lecturersArray = lecturersArray.map((lecturer: string) => {
@@ -56,7 +54,6 @@ async function getExamListForDate(range: string, sheets: any) {
             groups: groupsArray,
             university: row[4]
         }
-        //console.log(examInfo)
         return examInfo;
     });
 }
