@@ -11,7 +11,7 @@ const getExamDates = async (sheets: any, spreadsheetId: any) => {
         return sheet.properties.title
     })
     // TODO
-    result = result.slice(0, 30);
+    result = result.slice(0, 10);
     return result;
 }
 

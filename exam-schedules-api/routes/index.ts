@@ -4,7 +4,7 @@ const express = require('express');
 const {authAndGetData} = require('exam-schedules-lib');
 const router = express.Router();
 
-const delay = new Date(0, 0, 0, 0, 1);
+const delay = (2 * 60 * 1000);
 
 interface State {
     lastFetchTime?: number
@@ -21,7 +21,7 @@ function getCachedState(): State {
 }
 
 router.use((req: any, res: any, next: any) => {
-    if (fetchInfo.lastFetchTime === undefined || (Date.now() - fetchInfo.lastFetchTime) > delay.getMilliseconds()) {
+    if (fetchInfo.lastFetchTime === undefined || (Date.now() - fetchInfo.lastFetchTime) > delay) {
         console.log("Now fetching")
         authAndGetData().then((response: ExamInfo[]) => {
             fetchInfo.examsList = response
