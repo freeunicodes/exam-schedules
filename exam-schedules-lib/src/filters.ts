@@ -49,8 +49,49 @@ function byUniversity(examsList: ExamInfo[], university: string) {
         examsList, university);
 }
 
+function sumSimilarExamsMatchScore(filteredExams: any[]) {
+    for (let i = 0; i < filteredExams.length; i++) {
+        for (let j = i + 1; j < filteredExams.length; j++) {
+            if (filteredExams[i].searchScore != 0 && filteredExams[j].searchScore != 0) {
+                if (JSON.stringify(filteredExams[i].searchExam) === JSON.stringify(filteredExams[j].searchExam)) {
+                    filteredExams[i].searchScore += filteredExams[j].searchScore
+                    filteredExams[j].searchScore = 0
+                }
+            }
+        }
+    }
+    filteredExams = filteredExams.filter((exam: any) => exam.searchScore > 0)
+    return filteredExams;
+}
+
+function filterExams(examsList: ExamInfo[], university: string | undefined, lecturer: string | undefined,
+                     subject: string | undefined) {
+    let filteredExams: any = [];
+
+    if (subject !== undefined) {
+        let filteredExamsBySubject = bySubject(examsList, subject)
+        filteredExams.push(...filteredExamsBySubject)
+    }
+    if (lecturer !== undefined) {
+        let filteredExamsByLecturer = byLecturer(examsList, lecturer)
+        filteredExams.push(...filteredExamsByLecturer)
+    }
+
+    filteredExams = sumSimilarExamsMatchScore(filteredExams)
+    filteredExams.sort((a: any, b: any) => b.searchScore - a.searchScore)
+    filteredExams = filteredExams.map((exam: any) => exam.searchExam)
+
+    if (university !== undefined) {
+        let filteredExamsByUniversity = byUniversity(filteredExams, university).map((exam: any) => exam.searchExam)
+        filteredExams = filteredExams.filter((exam: ExamInfo) => filteredExamsByUniversity.includes(exam))
+    }
+
+    return filteredExams;
+}
+
 export default {
     byLecturer: byLecturer,
     bySubject: bySubject,
-    byUniversity: byUniversity
+    byUniversity: byUniversity,
+    filterExams: filterExams
 }
