@@ -2,6 +2,8 @@ const {google} = require('googleapis');
 const fs = require("fs");
 import {ExamInfo} from "./interfaces/ExamInfo";
 
+const fetchFullData = false
+
 //return array of Spreadsheets' titles
 const getExamDates = async (sheets: any, spreadsheetId: any) => {
     let result = (await sheets.spreadsheets.get({
@@ -11,7 +13,7 @@ const getExamDates = async (sheets: any, spreadsheetId: any) => {
         return sheet.properties.title
     })
     // TODO
-    result = result.slice(0, 10);
+    if (!fetchFullData) result = result.slice(0, 10);
     return result;
 }
 
@@ -58,12 +60,20 @@ async function getExamListForDate(range: string, sheets: any) {
     });
 }
 
+function sleep(delay: number) {
+    let start = new Date().getTime();
+    while (new Date().getTime() < start + delay) {}
+}
+
 // Returns array of all exams
 export async function getExamList(auth: any) {
     const sheets = google.sheets({version: 'v4', auth})
     const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
 
+    let rangeCnt = 0;
     const promises = ranges.map(range => {
+        rangeCnt++;
+        if (fetchFullData && rangeCnt % 50 == 0) sleep(60 * 1000)
         return getExamListForDate(range, sheets)
     })
     let result = (await Promise.all(promises)).flat()
