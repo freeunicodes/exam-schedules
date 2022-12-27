@@ -1,7 +1,7 @@
-import {ExamInfo} from "exam-schedules-lib";
+import {authAndGetData, ExamInfo} from "exam-schedules-lib";
 
-import express from 'express';
-const {authAndGetData} = require('exam-schedules-lib');
+import express, {NextFunction, Request, Response} from 'express';
+
 export const indexRouter = express.Router();
 
 const delay = (2 * 60 * 1000);
@@ -20,20 +20,21 @@ export function getCachedState(): State {
     return fetchInfo;
 }
 
-indexRouter.use((req: any, res: any, next: any) => {
+indexRouter.use((req: Request, res: Response, next: NextFunction) => {
     if (fetchInfo.lastFetchTime === undefined || (Date.now() - fetchInfo.lastFetchTime) > delay) {
         console.log("Now fetching")
-        authAndGetData().then((response: ExamInfo[]) => {
-            fetchInfo.examsList = response
-            fetchInfo.lastFetchTime = Date.now()
-            next()
-        });
+        authAndGetData()
+            .then((response: ExamInfo[]) => {
+                fetchInfo.examsList = response
+                fetchInfo.lastFetchTime = Date.now()
+                next()
+            });
     } else {
         next()
     }
 })
 
-indexRouter.get('/', function (req: any, res: any) {
+indexRouter.get('/', function (req: Request, res: Response) {
     res.send(fetchInfo);
 })
 

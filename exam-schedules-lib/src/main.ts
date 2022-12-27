@@ -27,13 +27,16 @@ function authAndGetFilteredData(university: string | undefined, lecturer: string
     })
 }
 
-export async function authAndGetData() {
+export function authAndGetData(): Promise<ExamInfo[]> {
     return authorize()
         .then((auth: OAuth2Client) => getExamList(auth))
         .then((examsList: ExamInfo[]) => {
             return examsList;
         })
-        .catch(console.error);
+        .catch((err) => {
+            console.log(err)
+            return []
+        });
 }
 
 
