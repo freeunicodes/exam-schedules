@@ -1,4 +1,8 @@
-const express = require('express')
+import { indexRouter } from './routes'
+import express from 'express'
+import { filterRouter } from './routes/filters'
+
+
 const app = express()
 const port = 3000;
 
@@ -6,11 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
 
-import indexRouter from './routes'
-
-let filterRouter = require('./routes/filters')
-
-app.use('/', indexRouter.router);
+app.use('/', indexRouter);
 app.use('/filters/', filterRouter);
 
 app.listen(port, () => {

@@ -4,6 +4,8 @@ import filters from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
 
+export {ExamInfo} from "./interfaces/ExamInfo";
+
 function main() {
     const program = new Command();
     program
@@ -32,6 +34,7 @@ export async function authAndGetData() {
         })
         .catch(console.error);
 }
+
 
 
 if (require.main === module) {
