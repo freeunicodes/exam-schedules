@@ -1,3 +1,5 @@
+import {OAuth2Client} from "google-auth-library";
+
 const fs = require('fs').promises;
 const path = require('path');
 const {authenticate} = require('@google-cloud/local-auth');
@@ -38,7 +40,7 @@ async function saveCredentials(client: any) {
  * Load or request or authorization to call APIs.
  *
  */
-export async function authorize() {
+export async function authorize(): Promise<OAuth2Client> {
     let client = await loadSavedCredentialsIfExist();
     if (client) {
         return client;

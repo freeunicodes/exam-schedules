@@ -1,18 +1,16 @@
-const {google} = require('googleapis');
+import googleapis from 'googleapis';
 const fs = require("fs");
 import {ExamInfo} from "./interfaces/ExamInfo";
+import {OAuth2Client} from "google-auth-library";
 
 const spreadsheetdIdPath = "../data/SpreadsheetId.json"
 
 //return array of Spreadsheets' titles
-const getExamDates = async (sheets: any, spreadsheetId: any) => {
-    let result = (await sheets.spreadsheets.get({
-        spreadsheetId
-    })).data.sheets;
-    result = result.map((sheet: any) => {
-        return `${sheet.properties.title}!A2:G`
-    })
-    return result;
+function getExamDates(sheetsApi: googleapis.sheets_v4.Sheets, spreadsheetId: any): Promise<string[]> {
+    return sheetsApi.spreadsheets
+        .get({spreadsheetId})
+        .then(res => res.data.sheets)
+        .then(sheets => sheets!.map(sheet => `${sheet.properties!.title}!A2:G`))
 }
 
 // Get spreadsheet ID from file
@@ -24,7 +22,7 @@ function getSpreadsheetId(): string {
 }
 
 // Returns array of examInfo for this date
-async function getExamListForDate(ranges: string[], sheets: any, authClient: any) {
+async function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: any) {
     const request = {
         spreadsheetId: getSpreadsheetId(),
         ranges: ranges,
@@ -33,6 +31,9 @@ async function getExamListForDate(ranges: string[], sheets: any, authClient: any
 
     try {
         const response = (await sheets.spreadsheets.values.batchGet(request)).data;
+        if (!response.valueRanges) {
+            return ""
+        }
         return response.valueRanges.map((currRangeRes: any) => {
             const currRange = currRangeRes.range.substring(0, 6)
             const rows = currRangeRes.values
@@ -66,8 +67,8 @@ async function getExamListForDate(ranges: string[], sheets: any, authClient: any
 }
 
 // Returns array of all exams
-export async function getExamList(auth: any) {
-    const sheets = google.sheets({version: 'v4', auth})
+export async function getExamList(auth: OAuth2Client) {
+    const sheets = new googleapis.sheets_v4.Sheets({auth: auth})
     const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
     const promises = await getExamListForDate(ranges, sheets, auth)
     let result = (await Promise.all(promises)).flat()
