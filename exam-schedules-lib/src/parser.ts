@@ -71,7 +71,8 @@ async function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4
 }
 
 // Returns array of all exams
-export async function getExamList(auth: OAuth2Client): Promise<ExamInfo[]> {
+export async function getExamList(auth: OAuth2Client|null): Promise<ExamInfo[]> {
+    if(!auth) return []
     const sheets = google.sheets({version: 'v4', auth})
     return getExamDates(sheets, getSpreadsheetId())
         .then((ranges: string[]) => getExamListForDate(ranges, sheets, auth))

@@ -29,7 +29,7 @@ function authAndGetFilteredData(university: string | undefined, lecturer: string
 
 export function authAndGetData(): Promise<ExamInfo[]> {
     return authorize()
-        .then((auth: OAuth2Client) => getExamList(auth))
+        .then((auth: OAuth2Client|null) => getExamList(auth))
         .then((examsList: ExamInfo[]) => {
             return examsList;
         })
