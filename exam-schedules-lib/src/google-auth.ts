@@ -1,6 +1,7 @@
+import {OAuth2Client} from "google-auth-library";
 const fs = require('fs').promises;
-const path = require('path');
-const {authenticate} = require('@google-cloud/local-auth');
+import path from 'path';
+import {authenticate} from '@google-cloud/local-auth';
 const {google} = require('googleapis');
 
 // If modifying these scopes, delete token.json.
@@ -8,10 +9,10 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
-const TOKEN_PATH = path.join('../data/', 'token.json');
-const CREDENTIALS_PATH = path.join('../data/', 'credentials.json');
+const TOKEN_PATH = path.resolve('../data/', 'token.json');
+const CREDENTIALS_PATH = path.resolve('../data/', 'credentials.json');
 
-async function loadSavedCredentialsIfExist() {
+async function loadSavedCredentialsIfExist() : Promise<OAuth2Client|null> {
     try {
         const content = await fs.readFile(TOKEN_PATH);
         const credentials = JSON.parse(content);
@@ -21,7 +22,7 @@ async function loadSavedCredentialsIfExist() {
     }
 }
 
-async function saveCredentials(client: any) {
+async function saveCredentials(client: OAuth2Client) {
     const content = await fs.readFile(CREDENTIALS_PATH);
     const keys = JSON.parse(content);
     const key = keys.installed || keys.web;
@@ -38,7 +39,7 @@ async function saveCredentials(client: any) {
  * Load or request or authorization to call APIs.
  *
  */
-export async function authorize() {
+export async function authorize() :Promise<OAuth2Client|null>{
     let client = await loadSavedCredentialsIfExist();
     if (client) {
         return client;
@@ -47,7 +48,7 @@ export async function authorize() {
         scopes: SCOPES,
         keyfilePath: CREDENTIALS_PATH,
     });
-    if (client.credentials) {
+    if (client && client.credentials) {
         await saveCredentials(client);
     }
     return client;

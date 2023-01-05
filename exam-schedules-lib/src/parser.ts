@@ -1,18 +1,17 @@
-const {google} = require('googleapis');
-const fs = require("fs");
+import googleapis, {google, sheets_v4} from 'googleapis';
+import fs from "fs";
 import {ExamInfo} from "./interfaces/ExamInfo";
+import {OAuth2Client} from "google-auth-library";
+import Schema$ValueRange = sheets_v4.Schema$ValueRange;
 
 const spreadsheetdIdPath = "../data/SpreadsheetId.json"
 
 //return array of Spreadsheets' titles
-const getExamDates = async (sheets: any, spreadsheetId: any) => {
-    let result = (await sheets.spreadsheets.get({
-        spreadsheetId
-    })).data.sheets;
-    result = result.map((sheet: any) => {
-        return `${sheet.properties.title}!A2:G`
-    })
-    return result;
+function getExamDates(sheetsApi: googleapis.sheets_v4.Sheets, spreadsheetId: string): Promise<string[]> {
+    return sheetsApi.spreadsheets
+        .get({spreadsheetId})
+        .then(res => res.data.sheets)
+        .then(sheets => sheets!.map(sheet => `${sheet.properties!.title}!A2:G`))
 }
 
 // Get spreadsheet ID from file
@@ -24,7 +23,7 @@ function getSpreadsheetId(): string {
 }
 
 // Returns array of examInfo for this date
-async function getExamListForDate(ranges: string[], sheets: any, authClient: any) {
+async function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<((ExamInfo | undefined)[] | undefined)[]> {
     const request = {
         spreadsheetId: getSpreadsheetId(),
         ranges: ranges,
@@ -33,7 +32,13 @@ async function getExamListForDate(ranges: string[], sheets: any, authClient: any
 
     try {
         const response = (await sheets.spreadsheets.values.batchGet(request)).data;
-        return response.valueRanges.map((currRangeRes: any) => {
+        if (!response.valueRanges) {
+            return [undefined]
+        }
+        return response.valueRanges.map((currRangeRes: Schema$ValueRange) => {
+            if (!currRangeRes.range) {
+                return undefined
+            }
             const currRange = currRangeRes.range.substring(0, 6)
             const rows = currRangeRes.values
             if (!rows || rows.length === 0) {
@@ -66,10 +71,13 @@ async function getExamListForDate(ranges: string[], sheets: any, authClient: any
 }
 
 // Returns array of all exams
-export async function getExamList(auth: any) {
+export async function getExamList(auth: OAuth2Client|null): Promise<ExamInfo[]> {
+    if(!auth) return []
     const sheets = google.sheets({version: 'v4', auth})
-    const ranges: string[] = await getExamDates(sheets, getSpreadsheetId())
-    const promises = await getExamListForDate(ranges, sheets, auth)
-    let result = (await Promise.all(promises)).flat()
-    return result.filter((exam: any) => exam != undefined);
+    return getExamDates(sheets, getSpreadsheetId())
+        .then((ranges: string[]) => getExamListForDate(ranges, sheets, auth))
+        .then((promises: ((ExamInfo | undefined)[] | undefined)[]) => Promise.all(promises))
+        .then((result: ((ExamInfo | undefined)[] | undefined)[]) => {
+            return result.flat().filter((exam) => exam != undefined) as ExamInfo[]
+        })
 }

@@ -3,6 +3,7 @@ import {ExamInfo} from "./interfaces/ExamInfo";
 import filters from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
+import {OAuth2Client} from "google-auth-library";
 
 export {ExamInfo} from "./interfaces/ExamInfo";
 
@@ -26,15 +27,17 @@ function authAndGetFilteredData(university: string | undefined, lecturer: string
     })
 }
 
-export async function authAndGetData() {
+export function authAndGetData(): Promise<ExamInfo[]> {
     return authorize()
-        .then((auth: any) => getExamList(auth))
+        .then((auth: OAuth2Client|null) => getExamList(auth))
         .then((examsList: ExamInfo[]) => {
             return examsList;
         })
-        .catch(console.error);
+        .catch((err) => {
+            console.log(err)
+            return []
+        });
 }
-
 
 
 if (require.main === module) {
