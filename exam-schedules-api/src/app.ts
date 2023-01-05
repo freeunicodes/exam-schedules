@@ -1,5 +1,5 @@
 import { indexRouter } from './routes'
-import express from 'express'
+import express, {NextFunction, Request, Response} from 'express'
 import { filterRouter } from './routes/filters'
 
 
@@ -16,4 +16,8 @@ app.use('/filters/', filterRouter);
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
     console.log(`Click to open: http://localhost:${port}`)
+})
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    res.status(500).send(err)
 })

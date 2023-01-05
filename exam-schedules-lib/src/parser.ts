@@ -23,61 +23,63 @@ function getSpreadsheetId(): string {
 }
 
 // Returns array of examInfo for this date
-async function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<((ExamInfo | undefined)[] | undefined)[]> {
+function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<((ExamInfo | undefined)[])[]> {
     const request = {
         spreadsheetId: getSpreadsheetId(),
         ranges: ranges,
         auth: authClient,
     };
 
-    try {
-        const response = (await sheets.spreadsheets.values.batchGet(request)).data;
-        if (!response.valueRanges) {
-            return [undefined]
-        }
-        return response.valueRanges.map((currRangeRes: Schema$ValueRange) => {
-            if (!currRangeRes.range) {
-                return undefined
+    return sheets.spreadsheets.values.batchGet(request)
+        .then(response => {
+            const data = response.data;
+
+            if (!data.valueRanges) {
+                return [[undefined]]
             }
-            const currRange = currRangeRes.range.substring(0, 6)
-            const rows = currRangeRes.values
-            if (!rows || rows.length === 0) {
-                return undefined;
-            }
-            return rows.map((row: any) => {
-                if (row.length < 5 || row.includes(undefined)) return undefined;
-                let lecturersArray = row[2].split(",");
-                lecturersArray = lecturersArray.map((lecturer: string) => {
-                    return lecturer.split(".").join(" ").split("  ").join(" ").trim();
-                });
-                let groupsArray = row[3].split(",");
-                groupsArray = groupsArray.map((group: string) => {
-                    return group.trim();
-                })
-                let examInfo: ExamInfo = {
-                    date: currRange,
-                    time: row[0],
-                    subject: row[1],
-                    lecturers: lecturersArray,
-                    groups: groupsArray,
-                    university: row[4]
+
+            return data.valueRanges.map((currRangeRes: Schema$ValueRange) => {
+                if (!currRangeRes.range) {
+                    return [undefined]
                 }
-                return examInfo;
-            });
+                const currRange = currRangeRes.range.substring(0, 6)
+                const rows = currRangeRes.values
+                if (!rows || rows.length === 0) {
+                    return [undefined];
+                }
+                return rows.map((row: any) => {
+                    if (row.length < 5 || row.includes(undefined)) return undefined;
+                    let lecturersArray = row[2].split(",");
+                    lecturersArray = lecturersArray.map((lecturer: string) => {
+                        return lecturer.split(".").join(" ").split("  ").join(" ").trim();
+                    });
+                    let groupsArray = row[3].split(",");
+                    groupsArray = groupsArray.map((group: string) => {
+                        return group.trim();
+                    })
+                    let examInfo: ExamInfo = {
+                        date: currRange,
+                        time: row[0],
+                        subject: row[1],
+                        lecturers: lecturersArray,
+                        groups: groupsArray,
+                        university: row[4]
+                    }
+                    return examInfo;
+                });
+            })
         })
-    } catch (err: any) {
-        throw new Error(err!.title)
-    }
+
+
 }
 
 // Returns array of all exams
-export async function getExamList(auth: OAuth2Client|null): Promise<ExamInfo[]> {
-    if(!auth) return []
+export async function getExamList(auth: OAuth2Client | null): Promise<ExamInfo[]> {
+    if (!auth) return []
     const sheets = google.sheets({version: 'v4', auth})
     return getExamDates(sheets, getSpreadsheetId())
         .then((ranges: string[]) => getExamListForDate(ranges, sheets, auth))
-        .then((promises: ((ExamInfo | undefined)[] | undefined)[]) => Promise.all(promises))
-        .then((result: ((ExamInfo | undefined)[] | undefined)[]) => {
+        .then((result: ((ExamInfo | undefined)[])[]) => {
             return result.flat().filter((exam) => exam != undefined) as ExamInfo[]
         })
 }

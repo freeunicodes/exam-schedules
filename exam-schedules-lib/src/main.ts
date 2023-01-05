@@ -15,27 +15,26 @@ function main() {
         .option('-u, --university <string>')
         .action((options) => {
             authAndGetFilteredData(options.university, options.lecturer, options.subject)
+                .then((result: ExamInfo[]) => console.log(result))
+                .catch((err: Error) => console.log(err))
         })
     program.parse()
 }
 
 
 function authAndGetFilteredData(university: string | undefined, lecturer: string | undefined,
-                                subject: string | undefined) {
-    authAndGetData().then((examsList: ExamInfo[] | void) => {
-        console.log(filters.filterExams(examsList!, university, lecturer, subject))
-    })
+                                subject: string | undefined): Promise<ExamInfo[]> {
+    return authAndGetData()
+        .then((examsList: ExamInfo[] | void) => {
+            return filters.filterExams(examsList!, university, lecturer, subject)
+        })
 }
 
 export function authAndGetData(): Promise<ExamInfo[]> {
     return authorize()
-        .then((auth: OAuth2Client|null) => getExamList(auth))
+        .then((auth: OAuth2Client) => getExamList(auth))
         .then((examsList: ExamInfo[]) => {
             return examsList;
-        })
-        .catch((err) => {
-            console.log(err)
-            return []
         });
 }
 
