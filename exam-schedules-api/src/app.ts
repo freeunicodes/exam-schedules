@@ -21,3 +21,5 @@ app.listen(port, () => {
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     res.status(500).send(err)
 })
+
+export default app
