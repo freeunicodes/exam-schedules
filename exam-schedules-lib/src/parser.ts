@@ -87,7 +87,7 @@ export async function getExamList(auth: OAuth2Client): Promise<ExamInfo[]> {
     const sheets = google.sheets({version: 'v4', auth})
     return getExamDates(sheets, getSpreadsheetId())
         .then((ranges: string[]) => getExamListForDate(ranges, sheets, auth))
-        .then((result: ((ExamInfo)[])[]) => {
-            return result.flat().filter((exam) => exam != undefined) as ExamInfo[]
+        .then((result: ExamInfo[][]) => {
+            return result.flat()
         })
 }
