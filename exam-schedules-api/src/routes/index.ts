@@ -28,7 +28,8 @@ indexRouter.use((req: Request, res: Response, next: NextFunction) => {
                 fetchInfo.examsList = response
                 fetchInfo.lastFetchTime = Date.now()
                 next()
-            });
+            })
+            .catch(err => next(err));
     } else {
         next()
     }
@@ -37,4 +38,5 @@ indexRouter.use((req: Request, res: Response, next: NextFunction) => {
 indexRouter.get('/', function (req: Request, res: Response) {
     res.send(fetchInfo);
 })
+
 

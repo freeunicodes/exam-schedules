@@ -1,7 +1,8 @@
 import {OAuth2Client} from "google-auth-library";
-const fs = require('fs').promises;
 import path from 'path';
 import {authenticate} from '@google-cloud/local-auth';
+
+const fs = require('fs').promises;
 const {google} = require('googleapis');
 
 // If modifying these scopes, delete token.json.
@@ -12,14 +13,12 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 const TOKEN_PATH = path.resolve('../data/', 'token.json');
 const CREDENTIALS_PATH = path.resolve('../data/', 'credentials.json');
 
-async function loadSavedCredentialsIfExist() : Promise<OAuth2Client|null> {
-    try {
-        const content = await fs.readFile(TOKEN_PATH);
-        const credentials = JSON.parse(content);
-        return google.auth.fromJSON(credentials);
-    } catch (err) {
-        return null;
-    }
+function loadSavedCredentialsIfExist(): Promise<OAuth2Client> {
+    return fs.readFile(TOKEN_PATH, 'utf-8')
+        .then((content: string) => {
+            const credentials = JSON.parse(content);
+            return google.auth.fromJSON(credentials);
+        })
 }
 
 async function saveCredentials(client: OAuth2Client) {
@@ -39,17 +38,18 @@ async function saveCredentials(client: OAuth2Client) {
  * Load or request or authorization to call APIs.
  *
  */
-export async function authorize() :Promise<OAuth2Client|null>{
-    let client = await loadSavedCredentialsIfExist();
-    if (client) {
-        return client;
-    }
-    client = await authenticate({
-        scopes: SCOPES,
-        keyfilePath: CREDENTIALS_PATH,
-    });
-    if (client && client.credentials) {
-        await saveCredentials(client);
-    }
-    return client;
+export function authorize(): Promise<OAuth2Client> {
+    return loadSavedCredentialsIfExist()
+        .catch(_ => {
+            return authenticate({
+                scopes: SCOPES,
+                keyfilePath: CREDENTIALS_PATH,
+            })
+            .then(async client => {
+                if (client.credentials) {
+                    await saveCredentials(client);
+                }
+                return client;
+            });
+        })
 }
