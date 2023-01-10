@@ -23,7 +23,7 @@ function getSpreadsheetId(): string {
 }
 
 // Returns array of examInfo for this date
-function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<((ExamInfo | undefined)[])[]> {
+function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<((ExamInfo)[])[]> {
     const request = {
         spreadsheetId: getSpreadsheetId(),
         ranges: ranges,
@@ -35,37 +35,38 @@ function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheet
             const data = response.data;
 
             if (!data.valueRanges) {
-                return [[undefined]]
+                return [[]]
             }
 
             return data.valueRanges.map((currRangeRes: Schema$ValueRange) => {
                 if (!currRangeRes.range) {
-                    return [undefined]
+                    return []
                 }
                 const currRange = currRangeRes.range.substring(0, 6)
                 const rows = currRangeRes.values
                 if (!rows || rows.length === 0) {
-                    return [undefined];
+                    return [];
                 }
-                return rows.map((row: any) => {
-                    if (row.length < 5 || row.includes(undefined)) return undefined;
-                    let lecturersArray = row[2].split(",");
-                    lecturersArray = lecturersArray.map((lecturer: string) => {
-                        return lecturer.split(".").join(" ").split("  ").join(" ").trim();
-                    });
-                    let groupsArray = row[3].split(",");
-                    groupsArray = groupsArray.map((group: string) => {
-                        return group.trim();
-                    })
-                    let examInfo: ExamInfo = {
-                        date: currRange,
-                        time: row[0],
-                        subject: row[1],
-                        lecturers: lecturersArray,
-                        groups: groupsArray,
-                        university: row[4]
-                    }
-                    return examInfo;
+                return rows
+                    .filter(row => row.length < 5 || row.includes(undefined))
+                    .map((row: any) => {
+                        let lecturersArray = row[2].split(",");
+                        lecturersArray = lecturersArray.map((lecturer: string) => {
+                            return lecturer.split(".").join(" ").split("  ").join(" ").trim();
+                        });
+                        let groupsArray = row[3].split(",");
+                        groupsArray = groupsArray.map((group: string) => {
+                            return group.trim();
+                        })
+                        let examInfo: ExamInfo = {
+                            date: currRange,
+                            time: row[0],
+                            subject: row[1],
+                            lecturers: lecturersArray,
+                            groups: groupsArray,
+                            university: row[4]
+                        }
+                        return examInfo;
                 });
             })
         })
