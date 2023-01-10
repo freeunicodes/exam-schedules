@@ -40,9 +40,7 @@ async function saveCredentials(client: OAuth2Client) {
  */
 export function authorize(): Promise<OAuth2Client> {
     return loadSavedCredentialsIfExist()
-        .then(client => {
-            return client;
-        }).catch(err => {
+        .catch(_ => {
             return authenticate({
                 scopes: SCOPES,
                 keyfilePath: CREDENTIALS_PATH,
