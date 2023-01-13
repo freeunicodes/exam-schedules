@@ -41,7 +41,7 @@ function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheet
 
 function createExamInfosFromSheet(sheet: Schema$ValueRange) {
     const rows = getRowsFromSheet(sheet)
-    const date = sheet.range!.substring(0, 6) // getRowsFromSheet checks this
+    const date = sheet.range!.substring(1, 6) // getRowsFromSheet checks this
     return rows
         .filter(row => !hasMissingValues(row))
         .map(row => createExamInfoFromRow(row, date));

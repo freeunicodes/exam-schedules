@@ -71,11 +71,11 @@ function filterExams(examsList: ExamInfo[], university: string | undefined, lect
                      subject: string | undefined): ExamInfo[] {
     let filteredExams: MatchScoreAndExam[] = [];
 
-    if (subject !== undefined) {
+    if (subject) {
         const filteredExamsBySubject = bySubject(examsList, subject)
         filteredExams.push(...filteredExamsBySubject)
     }
-    if (lecturer !== undefined) {
+    if (lecturer) {
         const filteredExamsByLecturer = byLecturer(examsList, lecturer)
         filteredExams.push(...filteredExamsByLecturer)
     }
@@ -84,7 +84,7 @@ function filterExams(examsList: ExamInfo[], university: string | undefined, lect
     filteredExams.sort((a: MatchScoreAndExam, b: MatchScoreAndExam) => b.searchScore - a.searchScore)
     let result: ExamInfo[] = filteredExams.map((exam: MatchScoreAndExam) => exam.searchExam)
 
-    if (university !== undefined) {
+    if (university) {
         let filteredExamsByUniversity = byUniversity(result, university).map((exam: MatchScoreAndExam) => exam.searchExam)
         result = result.filter((exam: ExamInfo) => filteredExamsByUniversity.includes(exam))
     }
