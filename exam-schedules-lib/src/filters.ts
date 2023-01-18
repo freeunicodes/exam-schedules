@@ -31,11 +31,46 @@ function mapAndFilterExamsList(mapFn: any, filterFn: any, examsList: ExamInfo[],
     }).flat();
 }
 
+type MergeOption = "MAX" | "SUM"
+
+function mergeSameExams(filteredExams: MatchScoreAndExam[], option: MergeOption): MatchScoreAndExam[] {
+    for (let i = 0; i < filteredExams.length; i++) {
+        for (let j = i + 1; j < filteredExams.length; j++) {
+            if (filteredExams[i].searchScore != 0 && filteredExams[j].searchScore != 0) {
+                if (JSON.stringify(filteredExams[i].searchExam) === JSON.stringify(filteredExams[j].searchExam)) {
+                    if (option === "MAX")
+                        filteredExams[i].searchScore = Math.max(filteredExams[i].searchScore, filteredExams[j].searchScore)
+                    else
+                        filteredExams[i].searchScore += filteredExams[j].searchScore
+                    filteredExams[j].searchScore = 0
+                }
+            }
+        }
+    }
+    filteredExams = filteredExams.filter((exam: MatchScoreAndExam) => exam.searchScore > 0)
+    return filteredExams;
+}
+
 function byLecturer(examsList: ExamInfo[], lecturer: string): MatchScoreAndExam[] {
-    return mapAndFilterExamsList(
+    const lecturerNameAndLastname: string[] = lecturer.split(' ')
+    let filteredByLecturer: MatchScoreAndExam[] = [];
+    const filteredByFullName = mapAndFilterExamsList(
         (x: ExamInfo) => x.lecturers,
         (x: ExamInfo, searchResult: string) => x.lecturers.includes(searchResult),
         examsList, lecturer);
+    filteredByLecturer.push(...filteredByFullName)
+    if (lecturerNameAndLastname.length > 1) {
+        const nameFirstLetter = lecturerNameAndLastname[0][0]
+        const lastName = lecturerNameAndLastname[1]
+        const sign = nameFirstLetter + " " + lastName
+        const filteredBySign = mapAndFilterExamsList(
+            (x: ExamInfo) => x.lecturers,
+            (x: ExamInfo, searchResult: string) => x.lecturers.includes(searchResult),
+            examsList, sign);
+        filteredByLecturer.push(...filteredBySign)
+        filteredByLecturer = mergeSameExams(filteredByLecturer, "MAX")
+    }
+    return filteredByLecturer
 }
 
 function bySubject(examsList: ExamInfo[], subject: string): MatchScoreAndExam[] {
@@ -52,21 +87,6 @@ function byUniversity(examsList: ExamInfo[], university: string): MatchScoreAndE
         examsList, university);
 }
 
-function sumSimilarExamsMatchScore(filteredExams: MatchScoreAndExam[]): MatchScoreAndExam[] {
-    for (let i = 0; i < filteredExams.length; i++) {
-        for (let j = i + 1; j < filteredExams.length; j++) {
-            if (filteredExams[i].searchScore != 0 && filteredExams[j].searchScore != 0) {
-                if (JSON.stringify(filteredExams[i].searchExam) === JSON.stringify(filteredExams[j].searchExam)) {
-                    filteredExams[i].searchScore += filteredExams[j].searchScore
-                    filteredExams[j].searchScore = 0
-                }
-            }
-        }
-    }
-    filteredExams = filteredExams.filter((exam: any) => exam.searchScore > 0)
-    return filteredExams;
-}
-
 function filterExams(examsList: ExamInfo[], university: string | undefined, lecturer: string | undefined,
                      subject: string | undefined): ExamInfo[] {
     let filteredExams: MatchScoreAndExam[] = [];
@@ -80,7 +100,7 @@ function filterExams(examsList: ExamInfo[], university: string | undefined, lect
         filteredExams.push(...filteredExamsByLecturer)
     }
 
-    filteredExams = sumSimilarExamsMatchScore(filteredExams)
+    filteredExams = mergeSameExams(filteredExams, "SUM")
     filteredExams.sort((a: MatchScoreAndExam, b: MatchScoreAndExam) => b.searchScore - a.searchScore)
     let result: ExamInfo[] = filteredExams.map((exam: MatchScoreAndExam) => exam.searchExam)
 
