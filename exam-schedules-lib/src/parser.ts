@@ -67,7 +67,7 @@ function createExamInfoFromRow(row: string[], date: string) {
 }
 
 function hasMissingValues(row: any[]) {
-    return row.length < 5 || row.includes(undefined)
+    return row.length < 5 || row.includes(undefined) || row.includes('')
 }
 
 function getRowsFromSheet(sheetResult: Schema$ValueRange) {
