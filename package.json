@@ -6,5 +6,11 @@
   "workspaces": [
     "exam-schedules-lib",
     "exam-schedules-api"
-  ]
+  ],
+  "dependencies": {
+    "deep-equal-in-any-order": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/deep-equal-in-any-order": "^1.0.1"
+  }
 }

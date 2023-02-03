@@ -11,7 +11,9 @@ function getExamDates(sheetsApi: googleapis.sheets_v4.Sheets, spreadsheetId: str
     return sheetsApi.spreadsheets
         .get({spreadsheetId})
         .then(res => res.data.sheets)
-        .then(sheets => sheets!.map(sheet => `${sheet.properties!.title}!A2:G`))
+        .then(sheets => {
+            return sheets!.map(sheet => `${sheet.properties!.title}!A2:G`)
+        })
 }
 
 // Get spreadsheet ID from file
@@ -23,7 +25,7 @@ function getSpreadsheetId(): string {
 }
 
 // Returns array of examInfo for this date
-function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<ExamInfo[][]> {
+function getValueRanges(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<Schema$ValueRange[]> {
     const request = {
         spreadsheetId: getSpreadsheetId(),
         ranges: ranges,
@@ -35,11 +37,13 @@ function getExamListForDate(ranges: string[], sheets: googleapis.sheets_v4.Sheet
             const data = response.data;
             return data.valueRanges || []
         })
-        .then(valueRanges => valueRanges.map(sheet => createExamInfosFromSheet(sheet)))
-
 }
 
-function createExamInfosFromSheet(sheet: Schema$ValueRange) {
+export function getExamListForValueRanges(valueRanges: Schema$ValueRange[]): ExamInfo[] {
+    return valueRanges.map(sheet => createExamInfosFromSheet(sheet)).flat()
+}
+
+export function createExamInfosFromSheet(sheet: Schema$ValueRange) {
     const rows = getRowsFromSheet(sheet)
     const date = sheet.range!.substring(1, 6) // getRowsFromSheet checks this
     return rows
@@ -47,10 +51,10 @@ function createExamInfosFromSheet(sheet: Schema$ValueRange) {
         .map(row => createExamInfoFromRow(row, date));
 }
 
-function createExamInfoFromRow(row: string[], date: string) {
+export function createExamInfoFromRow(row: string[], date: string): ExamInfo {
     let lecturersArray = row[2].split(",");
     lecturersArray = lecturersArray.map((lecturer: string) => {
-        return lecturer.split(".").join(" ").split("  ").join(" ").trim();
+        return lecturer.replace(".", " ").replace(/(\s)+/g, " ").trim();
     });
     let groupsArray = row[3].split(",");
     groupsArray = groupsArray.map((group: string) => {
@@ -66,11 +70,11 @@ function createExamInfoFromRow(row: string[], date: string) {
     }
 }
 
-function hasMissingValues(row: any[]) {
+export function hasMissingValues(row: any[]) {
     return row.length < 5 || row.includes(undefined) || row.includes('')
 }
 
-function getRowsFromSheet(sheetResult: Schema$ValueRange) {
+export function getRowsFromSheet(sheetResult: Schema$ValueRange) {
     if (!sheetResult.range) {
         return []
     }
@@ -86,8 +90,9 @@ function getRowsFromSheet(sheetResult: Schema$ValueRange) {
 export async function getExamList(auth: OAuth2Client): Promise<ExamInfo[]> {
     const sheets = google.sheets({version: 'v4', auth})
     return getExamDates(sheets, getSpreadsheetId())
-        .then((ranges: string[]) => getExamListForDate(ranges, sheets, auth))
-        .then((result: ExamInfo[][]) => {
-            return result.flat()
+        .then((ranges: string[]) => getValueRanges(ranges, sheets, auth))
+        .then((valueRanges: Schema$ValueRange[]) => getExamListForValueRanges(valueRanges))
+        .then((result: ExamInfo[]) => {
+            return result
         })
 }
