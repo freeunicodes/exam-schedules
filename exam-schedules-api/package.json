@@ -4,7 +4,7 @@
   "scripts": {
     "start": "ts-node src/app.ts",
     "build": "tsc",
-    "test": "ts-mocha test/*.test.ts --timeout 15000"
+    "test": "ts-mocha test/*.test.ts --timeout 15000 --exit"
   },
   "dependencies": {
     "@types/chai": "^4.3.4",
