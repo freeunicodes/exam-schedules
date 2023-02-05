@@ -15,3 +15,4 @@ jobs:
           node-version: 16
       - run: yarn install --froze-lockfile
       - run: yarn test-lib
+      - run: yarn test-api

@@ -3,7 +3,15 @@
   "scripts": {
     "build": "cd exam-schedules-api && tsc && cd .. && cd exam-schedules-lib && tsc",
     "test-lib": "cd exam-schedules-lib && yarn test",
-    "test-api": "cd exam-schedules-api && yarn test"
+    "test-api": "cd exam-schedules-api && yarn test",
+    "test": "yarn test-lib && yarn test-api",
+    "coverage": "nyc yarn test && rm -r .nyc_output",
+    "make-badges": "istanbul-badges-readme"
+  },
+  "nyc": {
+    "reporter": [
+      "json-summary"
+    ]
   },
   "workspaces": [
     "exam-schedules-lib",
