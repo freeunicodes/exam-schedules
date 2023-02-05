@@ -335,6 +335,5 @@ dist
 data/credentials.json
 data/token.json
 lib/
-yarn.lock
 ./idea
 package-lock.json
