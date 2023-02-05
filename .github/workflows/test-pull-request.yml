@@ -15,4 +15,6 @@ jobs:
           node-version: 16
       - run: yarn install --froze-lockfile
       - run: yarn test-api
+        env:
+          IN_GITHUB_ACTION: YES
       - run: yarn test-lib
