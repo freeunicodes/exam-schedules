@@ -1,5 +1,4 @@
 import {authAndGetData, ExamInfo} from "exam-schedules-lib";
-
 import express, {NextFunction, Request, Response} from 'express';
 
 export const indexRouter = express.Router();
@@ -24,11 +23,11 @@ let nowFetching: boolean = false
 
 indexRouter.use(async (req: Request, res: Response, next: NextFunction) => {
     // Wait if request is already being made
-    await until(nowFetching)
+    await until(() => nowFetching)
 
     if (fetchInfo.lastFetchTime === undefined || (Date.now() - fetchInfo.lastFetchTime) > delay) {
-        console.log("Now fetching");
         nowFetching = true;
+        console.log("Now fetching", fetchInfo.lastFetchTime);
         authAndGetData()
             .then((response: ExamInfo[]) => {
                 fetchInfo.examsList = response
@@ -51,9 +50,9 @@ indexRouter.get('/', function (req: Request, res: Response) {
     res.send(fetchInfo);
 })
 
-function until(condition: boolean) {
+function until(func: () => boolean) {
     const poll = (resolve: (value?: {} | PromiseLike<{}>) => void) => {
-        if (!condition) resolve();
+        if (!func()) resolve();
         else setTimeout(_ => poll(resolve), 400);
     }
 
