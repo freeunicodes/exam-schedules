@@ -17,7 +17,7 @@ const CREDENTIALS_PATH = path.resolve('../data/', 'credentials.json');
 function loadCredentials() {
     if (!fs.existsSync(CREDENTIALS_PATH)) {
         const envCredentials = process.env.CREDENTIALS
-        fs.writeFileSync(CREDENTIALS_PATH, JSON.stringify(envCredentials!))
+        fs.writeFileSync(CREDENTIALS_PATH, envCredentials!)
     }
 }
 
