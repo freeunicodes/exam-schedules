@@ -2,7 +2,8 @@ import {OAuth2Client} from "google-auth-library";
 import path from 'path';
 import {authenticate} from '@google-cloud/local-auth';
 
-const fs = require('fs').promises;
+import fs from 'fs'
+require('dotenv').config();
 const {google} = require('googleapis');
 
 // If modifying these scopes, delete token.json.
@@ -13,17 +14,16 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 const TOKEN_PATH = path.resolve('../data/', 'token.json');
 const CREDENTIALS_PATH = path.resolve('../data/', 'credentials.json');
 
-function loadSavedCredentialsIfExist(): Promise<OAuth2Client> {
-    return fs.readFile(TOKEN_PATH, 'utf-8')
-        .then((content: string) => {
-            const credentials = JSON.parse(content);
-            return google.auth.fromJSON(credentials);
-        })
+function loadCredentials() {
+    if (!fs.existsSync(CREDENTIALS_PATH)) {
+        const envCredentials = process.env.CREDENTIALS
+        fs.writeFileSync(CREDENTIALS_PATH, JSON.stringify(envCredentials!))
+    }
 }
 
-async function saveCredentials(client: OAuth2Client) {
-    const content = await fs.readFile(CREDENTIALS_PATH);
-    const keys = JSON.parse(content);
+async function saveToken(client: OAuth2Client) {
+    const content = process.env.CREDENTIALS;
+    const keys = JSON.parse(content!);
     const key = keys.installed || keys.web;
     const payload = JSON.stringify({
         type: 'authorized_user',
@@ -31,25 +31,28 @@ async function saveCredentials(client: OAuth2Client) {
         client_secret: key.client_secret,
         refresh_token: client.credentials.refresh_token,
     });
-    await fs.writeFile(TOKEN_PATH, payload);
+    await fs.promises.writeFile(TOKEN_PATH, payload);
 }
 
-/**
- * Load or request or authorization to call APIs.
- *
- */
 export function authorize(): Promise<OAuth2Client> {
-    return loadSavedCredentialsIfExist()
-        .catch(_ => {
+    loadCredentials()
+    return fs.promises.readFile(TOKEN_PATH, 'utf-8')
+        .then((content: string) => {
+            return google.auth.fromJSON(JSON.parse(content));
+        })
+        .catch(async () => {
+            const envToken = process.env.TOKEN
+            if (envToken) {
+                await fs.promises.writeFile(TOKEN_PATH, envToken);
+                return google.auth.fromJSON(JSON.parse(envToken))
+            }
             return authenticate({
                 scopes: SCOPES,
                 keyfilePath: CREDENTIALS_PATH,
+            }).then(async auth => {
+                if (auth.credentials)
+                    await saveToken(auth);
+                return auth
             })
-            .then(async client => {
-                if (client.credentials) {
-                    await saveCredentials(client);
-                }
-                return client;
-            });
         })
 }

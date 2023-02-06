@@ -18,7 +18,8 @@
     "exam-schedules-api"
   ],
   "dependencies": {
-    "deep-equal-in-any-order": "^2.0.2"
+    "deep-equal-in-any-order": "^2.0.2",
+    "dotenv": "^16.0.3"
   },
   "devDependencies": {
     "@types/deep-equal-in-any-order": "^1.0.1"
