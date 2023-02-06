@@ -4,7 +4,7 @@ import { filterRouter } from './routes/filters'
 import cors from 'cors'
 
 const app = express()
-const port = 5000;
+const port = 3636;
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -20,6 +20,9 @@ app.listen(port, () => {
 })
 
 app.use((err: Error, req: Request, res: Response, _: NextFunction) => {
+    if (process.env.IN_GITHUB_ACTION === "YES") {
+        console.log(err)
+    }
     res.status(500).send(err)
 })
 

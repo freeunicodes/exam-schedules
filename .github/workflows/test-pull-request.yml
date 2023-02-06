@@ -14,4 +14,9 @@ jobs:
         with:
           node-version: 16
       - run: yarn install --froze-lockfile
+      - run: yarn test-api
+        env:
+          IN_GITHUB_ACTION: YES
+          CREDENTIALS: ${{ secrets.CREDENTIALS_JSON }}
+          TOKEN: ${{ secrets.TOKEN_JSON }}
       - run: yarn test-lib
