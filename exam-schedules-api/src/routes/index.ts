@@ -27,7 +27,7 @@ indexRouter.use(async (req: Request, res: Response, next: NextFunction) => {
 
     if (fetchInfo.lastFetchTime === undefined || (Date.now() - fetchInfo.lastFetchTime) > delay) {
         nowFetching = true;
-        console.log("Now fetching", fetchInfo.lastFetchTime);
+        console.log("Now fetching");
         authAndGetData()
             .then((response: ExamInfo[]) => {
                 fetchInfo.examsList = response
