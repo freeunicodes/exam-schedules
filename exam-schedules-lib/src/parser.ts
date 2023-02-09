@@ -3,8 +3,9 @@ import fs from "fs";
 import {ExamInfo} from "./interfaces/ExamInfo";
 import {OAuth2Client} from "google-auth-library";
 import Schema$ValueRange = sheets_v4.Schema$ValueRange;
+import path from "path";
 
-const spreadsheetIdPath = "../data/SpreadsheetId.json"
+const spreadsheetIdPath = path.join(__dirname, "../../data/SpreadsheetId.json")
 
 //return array of Spreadsheets' titles
 function getExamDates(sheetsApi: googleapis.sheets_v4.Sheets, spreadsheetId: string): Promise<string[]> {

@@ -23,7 +23,7 @@ app.use((err: Error, req: Request, res: Response, _: NextFunction) => {
     if (process.env.IN_GITHUB_ACTION === "YES") {
         console.log(err)
     }
-    res.status(500).send(err)
+    res.status(500).send(err.stack)
 })
 
 export default app
