@@ -11,12 +11,15 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
-const TOKEN_PATH = path.resolve('../data/', 'token.json');
-const CREDENTIALS_PATH = path.resolve('../data/', 'credentials.json');
+const TOKEN_PATH = path.resolve(path.join(__dirname, '../../data/'), 'token.json');
+const CREDENTIALS_PATH = path.resolve(path.join(__dirname, '../../data/'), 'credentials.json');
 
 function loadCredentials() {
     if (!fs.existsSync(CREDENTIALS_PATH)) {
         const envCredentials = process.env.CREDENTIALS
+        if (envCredentials == undefined) {
+            throw("Could not find environment variable named CREDENTIALS, app might not work!")
+        }
         fs.writeFileSync(CREDENTIALS_PATH, envCredentials!)
     }
 }
