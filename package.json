@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "cd exam-schedules-api && tsc && cd .. && cd exam-schedules-lib && tsc",
-    "start": "ts-node exam-schedules-api/src/app.ts",
+    "build": "tsc",
+    "start": "node exam-schedules-api/lib/src/app.js",
     "start-cli": "cd exam-schedules-lib && yarn start",
     "test-lib": "cd exam-schedules-lib && yarn test",
     "test-api": "cd exam-schedules-api && yarn test",

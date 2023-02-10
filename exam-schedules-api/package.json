@@ -1,8 +1,9 @@
 {
   "name": "exam-schedules-api",
   "version": "1.0.0",
+  "main": "lib/src/app.js",
   "scripts": {
-    "start": "ts-node src/app.ts",
+    "start": "node lib/src/app.js",
     "build": "tsc",
     "test": "ts-mocha test/*.test.ts --timeout 15000 --exit",
     "coverage": "nyc yarn test && rm -r .nyc_output"
