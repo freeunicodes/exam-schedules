@@ -3,9 +3,10 @@ import {ExamInfo} from "./interfaces/ExamInfo";
 import filters from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
-import {OAuth2Client} from "google-auth-library";
+import createLogger from "logging";
 
 export {ExamInfo} from "./interfaces/ExamInfo";
+const logger = createLogger(__filename);
 
 function main() {
     const program = new Command();
@@ -16,28 +17,25 @@ function main() {
         .action((options) => {
             authAndGetFilteredData(options.university, options.lecturer, options.subject)
                 .then((result: ExamInfo[]) => console.log(result))
-                .catch((err: Error) => console.log(err))
+                .catch((err: Error) => {
+                    logger.error(err)
+                    process.exit(1)
+                })
         })
     program.parse()
 }
 
 
-function authAndGetFilteredData(university: string | undefined, lecturer: string | undefined,
+async function authAndGetFilteredData(university: string | undefined, lecturer: string | undefined,
                                 subject: string | undefined): Promise<ExamInfo[]> {
-    return authAndGetData()
-        .then((examsList: ExamInfo[] | void) => {
-            return filters.filterExams(examsList!, university, lecturer, subject)
-        })
+    const data = await authAndGetData()
+    return filters.filterExams(data, university, lecturer, subject)
 }
 
-export function authAndGetData(): Promise<ExamInfo[]> {
-    return authorize()
-        .then((auth: OAuth2Client) => getExamList(auth))
-        .then((examsList: ExamInfo[]) => {
-            return examsList;
-        });
+export async function authAndGetData(): Promise<ExamInfo[]> {
+    const auth = authorize();
+    return await getExamList(auth)
 }
-
 
 if (require.main === module) {
     main();

@@ -334,6 +334,7 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/node,webstorm,intellij
 data/credentials.json
 data/token.json
+secret.json
 lib/
 ./idea
 package-lock.json

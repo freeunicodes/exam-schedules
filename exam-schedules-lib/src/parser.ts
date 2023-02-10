@@ -1,14 +1,12 @@
 import googleapis, {google, sheets_v4} from 'googleapis';
-import fs from "fs";
 import {ExamInfo} from "./interfaces/ExamInfo";
-import {OAuth2Client} from "google-auth-library";
+import {GoogleAuth} from "google-auth-library";
 import Schema$ValueRange = sheets_v4.Schema$ValueRange;
-import path from "path";
+import createLogger from 'logging';
 
-const spreadsheetIdPath = path.join(__dirname, "../../data/SpreadsheetId.json")
+const logger = createLogger(__filename);
 
-//return array of Spreadsheets' titles
-function getExamDates(sheetsApi: googleapis.sheets_v4.Sheets, spreadsheetId: string): Promise<string[]> {
+function getExamDates(sheetsApi: googleapis.sheets_v4.Sheets, spreadsheetId: string | undefined): Promise<string[]> {
     return sheetsApi.spreadsheets
         .get({spreadsheetId})
         .then(res => res.data.sheets)
@@ -19,14 +17,15 @@ function getExamDates(sheetsApi: googleapis.sheets_v4.Sheets, spreadsheetId: str
 
 // Get spreadsheet ID from file
 function getSpreadsheetId(): string {
-    if (!fs.existsSync(spreadsheetIdPath)) {
-        throw new Error(`SpreadsheetId.json not found in ../data/ directory`);
+    const spreadSheetId = process.env.SPREADSHEET_ID
+    if (spreadSheetId === undefined || spreadSheetId == '') {
+        throw("Could not read Spreadsheet ID from environment, application will not work!")
     }
-    return JSON.parse(fs.readFileSync(spreadsheetIdPath).toString()).spreadsheetId;
+    return spreadSheetId
 }
 
 // Returns array of examInfo for this date
-function getValueRanges(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: OAuth2Client): Promise<Schema$ValueRange[]> {
+function getValueRanges(ranges: string[], sheets: googleapis.sheets_v4.Sheets, authClient: GoogleAuth): Promise<Schema$ValueRange[]> {
     const request = {
         spreadsheetId: getSpreadsheetId(),
         ranges: ranges,
@@ -88,8 +87,10 @@ export function getRowsFromSheet(sheetResult: Schema$ValueRange) {
 
 
 // Returns array of all exams
-export async function getExamList(auth: OAuth2Client): Promise<ExamInfo[]> {
+export function getExamList(auth: GoogleAuth): Promise<ExamInfo[]> {
+    logger.debug("Trying to create API with auth...")
     const sheets = google.sheets({version: 'v4', auth})
+    logger.debug("Successfully created sheets API")
     return getExamDates(sheets, getSpreadsheetId())
         .then((ranges: string[]) => getValueRanges(ranges, sheets, auth))
         .then((valueRanges: Schema$ValueRange[]) => getExamListForValueRanges(valueRanges))
