@@ -1,11 +1,12 @@
 import {authorize} from "./google-auth";
 import {ExamInfo} from "./interfaces/ExamInfo";
-import filters from "./filters";
+import {filters} from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
 import {OAuth2Client} from "google-auth-library";
 
 export {ExamInfo} from "./interfaces/ExamInfo";
+export {filters} from './filters'
 
 function main() {
     const program = new Command();

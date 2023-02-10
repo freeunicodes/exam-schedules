@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {ExamInfo} from "../src/interfaces/ExamInfo";
-import filters from "../src/filters";
+import {filters} from "../src/filters";
 
 describe(`filtering exams`, () => {
     const examInfo: ExamInfo = {

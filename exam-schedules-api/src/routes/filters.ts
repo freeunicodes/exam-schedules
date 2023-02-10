@@ -1,4 +1,4 @@
-import filters from 'exam-schedules-lib/src/filters'
+import {filters} from 'exam-schedules-lib'
 import {getCachedState} from './index'
 import express, {Request, Response} from 'express';
 
