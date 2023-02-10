@@ -1,11 +1,13 @@
 import {authorize} from "./google-auth";
 import {ExamInfo} from "./interfaces/ExamInfo";
-import filters from "./filters";
+import {filters} from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
 import createLogger from "logging";
 
 export {ExamInfo} from "./interfaces/ExamInfo";
+export {filters} from './filters'
+
 const logger = createLogger(__filename);
 
 function main() {

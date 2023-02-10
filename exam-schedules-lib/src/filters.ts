@@ -112,7 +112,7 @@ function filterExams(examsList: ExamInfo[], university: string | undefined, lect
     return result;
 }
 
-export default {
+export const filters = {
     byLecturer: byLecturer,
     bySubject: bySubject,
     byUniversity: byUniversity,

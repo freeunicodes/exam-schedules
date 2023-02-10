@@ -2,11 +2,11 @@
   "name": "exam-schedules-lib",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.ts",
+  "main": "lib/src/main.js",
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc",
-    "start": "ts-node src/main.ts",
+    "start": "node lib/src/main.ts",
     "test": "ts-mocha test/**/*.test.ts",
     "coverage": "nyc yarn test && rm -r .nyc_output"
   },
