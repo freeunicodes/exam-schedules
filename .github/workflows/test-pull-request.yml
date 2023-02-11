@@ -22,5 +22,6 @@ jobs:
         env:
           SECRET_JSON: ${{ secrets.SECRET_JSON }}
         run: echo $SECRET_JSON > secret.json
+      - run: yarn build
       - run: yarn test-api
       - run: yarn test-lib
