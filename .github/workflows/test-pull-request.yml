@@ -4,6 +4,10 @@ on: pull_request
 
 jobs:
   build:
+    env:
+      IN_GITHUB_ACTION: YES
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,9 +18,9 @@ jobs:
         with:
           node-version: 16
       - run: yarn install --froze-lockfile
-      - run: yarn test-api
+      - name: Retrieve the secret.json and decode it to a file
         env:
-          IN_GITHUB_ACTION: YES
-          CREDENTIALS: ${{ secrets.CREDENTIALS_JSON }}
-          TOKEN: ${{ secrets.TOKEN_JSON }}
+          SECRET_JSON: ${{ secrets.SECRET_JSON }}
+        run: echo $SECRET_JSON > secret.json
+      - run: yarn test-api
       - run: yarn test-lib
