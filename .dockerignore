@@ -3,6 +3,7 @@ npm-debug.log
 data/credentials.json
 data/token.json
 **/.env
+**/.env.docker
 **/secret.json
 exam-schedules-lib/data/credentials.json
 exam-schedules-lib/data/token.json

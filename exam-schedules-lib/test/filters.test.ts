@@ -45,6 +45,11 @@ describe(`filtering exams`, () => {
             expect(filteredList).to.include(examInfo)
         })
 
+        it(`filtering only by lecturer but university is empty string`, () => {
+            const filteredList: ExamInfo[] = filters.filterExams([examInfo], '', "ია მღვდლიაშვილი", undefined)
+            expect(filteredList).to.include(examInfo)
+        })
+
         it(`filtering only by lecturer and university`, () => {
             const filteredList: ExamInfo[] = filters.filterExams([examInfo], "freeuni", "ია მღვდლიაშვილი", undefined)
             expect(filteredList).to.include(examInfo)
