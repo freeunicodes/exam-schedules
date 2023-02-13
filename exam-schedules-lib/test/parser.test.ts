@@ -12,12 +12,13 @@ import {sheets_v4} from "googleapis";
 import deepEqualInAnyOrder from 'deep-equal-in-any-order'
 import Schema$ValueRange = sheets_v4.Schema$ValueRange;
 import chai from 'chai'
+import path from "path";
 
 chai.use(deepEqualInAnyOrder)
 
 describe(`integration tests`, () => {
-    const valueRanges: Schema$ValueRange[] = JSON.parse(fs.readFileSync('test/multiple_sheets.json', 'utf-8'))
-    const exams: ExamInfo[] = JSON.parse(fs.readFileSync('test/getExamListForValueRanges_result.json', 'utf-8'))
+    const valueRanges: Schema$ValueRange[] = JSON.parse(fs.readFileSync(path.join(__dirname, 'multiple_sheets.json'), 'utf-8'))
+    const exams: ExamInfo[] = JSON.parse(fs.readFileSync(path.join(__dirname, 'getExamListForValueRanges_result.json'), 'utf-8'))
     it('check getExamListForValueRanges result to be valid ExamInfo[]', () => {
         const result = getExamListForValueRanges(valueRanges);
         expect(result).to.be.deep.equal(exams);
@@ -30,8 +31,8 @@ describe(`integration tests`, () => {
 })
 
 describe(`unit tests`, () => {
-    const valueRange: Schema$ValueRange = JSON.parse(fs.readFileSync('test/single_sheet.json', 'utf-8'))
-    const exams: ExamInfo[] = JSON.parse(fs.readFileSync('test/createExamInfoFromSheet_result.json', 'utf-8'))
+    const valueRange: Schema$ValueRange = JSON.parse(fs.readFileSync(path.join(__dirname, 'single_sheet.json'), 'utf-8'))
+    const exams: ExamInfo[] = JSON.parse(fs.readFileSync(path.join(__dirname, 'createExamInfoFromSheet_result.json'), 'utf-8'))
     const completeRow = [
         "11:10-11:50",
         "ფსიქოლოგია",
@@ -52,7 +53,7 @@ describe(`unit tests`, () => {
         expect(result).to.be.deep.equal(exams);
     })
     it(`getRowsFromSheet`, () => {
-        const exams: ExamInfo[] = JSON.parse(fs.readFileSync('test/getRowsFromSheet_result.json', 'utf-8'))
+        const exams: ExamInfo[] = JSON.parse(fs.readFileSync(path.join(__dirname, 'getRowsFromSheet_result.json'), 'utf-8'))
         const result = getRowsFromSheet(valueRange)
         expect(result).to.be.deep.equal(exams);
     })

@@ -11,6 +11,10 @@ app.use(express.urlencoded({extended: false}));
 app.use(cors())
 
 
+app.get('/health', (req, res) => {
+    res.status(200).send()
+})
+
 app.use('/', indexRouter);
 app.use('/filters/', filterRouter);
 
