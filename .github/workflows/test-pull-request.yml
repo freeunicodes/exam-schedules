@@ -21,7 +21,7 @@ jobs:
       - name: Retrieve the secret.json and decode it to a file
         env:
           SECRET_JSON: ${{ secrets.SECRET_JSON }}
-        run: echo $SECRET_JSON | tee > exam-schedules-api/secret.json exam-schedules-lib/secret.json
+        run: echo $SECRET_JSON > secret.json
       - run: yarn build
       - run: yarn test-api
       - run: yarn test-lib
