@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    ports:
+      - 3636:3636
+    secrets:
+      - secret.json
+    env_file: .env.docker
+secrets:
+    secret.json:
+      file: ./secret.json

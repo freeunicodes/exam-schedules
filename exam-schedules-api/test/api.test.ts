@@ -7,6 +7,9 @@ import {ExamInfo} from 'exam-schedules-lib'
 chai.use(chaiHttp)
 
 describe('test ok (200) statuses', function () {
+    it('health check', (done) => {
+        expectStatus(chai.request(app).get('/health'), 200, done)
+    })
     it('/ should return 200', (done) => {
         expectStatus(chai.request(app).get('/'), 200, done)
     })

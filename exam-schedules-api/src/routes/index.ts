@@ -1,7 +1,9 @@
 import {authAndGetData, ExamInfo} from "exam-schedules-lib";
 import express, {NextFunction, Request, Response} from 'express';
+import createLogger from 'logging';
 
 export const indexRouter = express.Router();
+const logger = createLogger(__filename);
 
 const delay = (2 * 60 * 1000);
 
@@ -26,8 +28,8 @@ indexRouter.use(async (req: Request, res: Response, next: NextFunction) => {
     await until(() => nowFetching)
 
     if (fetchInfo.lastFetchTime === undefined || (Date.now() - fetchInfo.lastFetchTime) > delay) {
+        logger.info("Now fetching (lastFetchTime " + fetchInfo.lastFetchTime + ")")
         nowFetching = true;
-        console.log("Now fetching");
         authAndGetData()
             .then((response: ExamInfo[]) => {
                 fetchInfo.examsList = response
