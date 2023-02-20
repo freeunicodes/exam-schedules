@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer"
 import express from "express";
 
-const sendEmail = async(req: any, _: any) => {
+export const emailerRouter = express.Router()
+emailerRouter.post("", (req, res) => {
     const {name, email, message} = req.body;
 
     const transporter = nodemailer.createTransport({
@@ -12,14 +13,18 @@ const sendEmail = async(req: any, _: any) => {
         },
     });
 
-    await transporter.sendMail({
-        to: process.env.GMAIL, // sender address
-        from: process.env.GMAIL, // list of receivers
-        subject: "Exam Schedules - from " + name, // Subject line
-        text: "Email author: " + email + "\n" + message, // plain text body
+    const mailOptions = {
+        to: process.env.GMAIL,
+        from: process.env.GMAIL,
+        subject: "Exam Schedules - from " + name,
+        text: "Email author: " + email + "\n" + message,
+    };
+
+    transporter.sendMail(mailOptions, (error, _) => {
+        if (error) {
+            res.status(500).send("Something went wrong.");
+        } else {
+            res.status(200).send("Success");
+        }
     });
-};
-
-export const emailerRouter = express.Router()
-
-emailerRouter.use(sendEmail)
+});
