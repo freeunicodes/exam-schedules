@@ -2,6 +2,7 @@ import { indexRouter } from './routes'
 import express, {NextFunction, Request, Response} from 'express'
 import { filterRouter } from './routes/filters'
 import cors from 'cors'
+import {emailerRouter} from "./routes/SendEmail";
 
 const app = express()
 const port = 3636;
@@ -17,6 +18,7 @@ app.get('/health', (req, res) => {
 
 app.use('/', indexRouter);
 app.use('/filters/', filterRouter);
+app.use('/send-email/', emailerRouter);
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
