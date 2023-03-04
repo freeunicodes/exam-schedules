@@ -4,9 +4,13 @@ import {filters} from "./filters";
 import {getExamList} from "./parser";
 import {Command} from 'commander'
 import createLogger from "logging";
+import {sendMail} from "./contact-us";
+import {EmailOptions} from "./interfaces/EmailOptions";
 
 export {ExamInfo} from "./interfaces/ExamInfo";
 export {filters} from './filters'
+export {sendMail}
+export {EmailOptions}
 
 const logger = createLogger(__filename);
 

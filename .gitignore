@@ -339,3 +339,4 @@ secret.json
 lib/
 ./idea
 package-lock.json
+mail-secret.json
