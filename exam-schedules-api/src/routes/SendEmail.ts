@@ -5,7 +5,7 @@ export const emailerRouter = express.Router()
 emailerRouter.post("", (req, res, next) => {
     const {name, email, message} = req.body;
     if (!process.env.RECIPIENTS) {
-        next(new Error("There is not recipients"))
+        res.status(500).send("No RECIPIENTS variable in env file")
         return
     }
     const recipients = process.env.RECIPIENTS.split(',').map((mailAdress) => mailAdress.trim())
@@ -19,10 +19,10 @@ emailerRouter.post("", (req, res, next) => {
 
     sendMail(mailOptions)
         .then((_ => {
+            res.status(200).send()
             next()
         }))
         .catch(err => {
-            console.log(err)
-            next(err)
+            res.status(500).send(err)
         })
 });
