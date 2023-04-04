@@ -1,30 +1,28 @@
-import nodemailer from "nodemailer"
 import express from "express";
+import {EmailOptions, sendMail} from "exam-schedules-lib";
 
 export const emailerRouter = express.Router()
-emailerRouter.post("", (req, res) => {
+emailerRouter.post("", (req, res, next) => {
     const {name, email, message} = req.body;
+    if (!process.env.RECIPIENTS) {
+        res.status(500).send("No RECIPIENTS variable in env file")
+        return
+    }
+    const recipients = process.env.RECIPIENTS.split(',').map((mailAdress) => mailAdress.trim())
 
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.GMAIL,
-            pass: process.env.PASSWORD
-        },
-    });
-
-    const mailOptions = {
-        to: process.env.GMAIL,
+    const mailOptions: EmailOptions = {
+        to: recipients,
         from: process.env.GMAIL,
         subject: "Exam Schedules - from " + name,
         text: "Email author: " + email + "\n" + message,
     };
 
-    transporter.sendMail(mailOptions, (error, _) => {
-        if (error) {
-            res.status(500).send("Something went wrong.");
-        } else {
-            res.status(200).send("Success");
-        }
-    });
+    sendMail(mailOptions)
+        .then((_ => {
+            res.status(200).send()
+            next()
+        }))
+        .catch(err => {
+            res.status(500).send(err)
+        })
 });
