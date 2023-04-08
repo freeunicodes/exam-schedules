@@ -8,6 +8,9 @@ jobs:
       IN_GITHUB_ACTION: YES
       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+      GMAIL: ${{ secrets.GMAIL }}
+      RECIPIENTS: ${{ secrets.RECIPIENTS }}
+      MAIL_SECRET: ${{ secrets.MAIL_SECRET }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,10 +21,11 @@ jobs:
         with:
           node-version: 16
       - run: yarn install --froze-lockfile
-      - name: Retrieve the secret.json and decode it to a file
+      - name: Retrieve the secret.json and mail-secret.json and decode it to a file
         env:
           SECRET_JSON: ${{ secrets.SECRET_JSON }}
-        run: echo $SECRET_JSON > secret.json
+          MAIL_SECRET_JSON: ${{ secrets.MAIL_SECRET_JSON }}
+        run: echo $SECRET_JSON > secret.json && echo $MAIL_SECRET_JSON > mail-secret.json
       - run: yarn build
       - run: yarn test-api
       - run: yarn test-lib
